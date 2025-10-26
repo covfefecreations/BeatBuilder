@@ -1,0 +1,97 @@
+{
+  "name": "Basic Drumkit",
+  "tracks": [
+    {
+      "id": "kick",
+      "sound": "kick",
+      "midiNote": 36,
+      "steps": [
+        { "active": true },
+        { "active": false },
+        { "active": false },
+        { "active": false },
+        { "active": true },
+        { "active": false },
+        { "active": false },
+        { "active": false },
+        { "active": true },
+        { "active": false },
+        { "active": false },
+        { "active": false },
+        { "active": true },
+        { "active": false },
+        { "active": false },
+        { "active": false }
+      ]
+    },
+    {
+      "id": "snare",
+      "sound": "snare",
+      "midiNote": 38,
+      "steps": [
+        { "active": false },
+        { "active": false },
+        { "active": false },
+        { "active": false },
+        { "active": true },
+        { "active": false },
+        { "active": false },
+        { "active": false },
+        { "active": false },
+        { "active": false },
+        { "active": false },
+        { "active": false },
+        { "active": true },
+        { "active": false },
+        { "active": false },
+        { "active": false }
+      ]
+    },
+    {
+      "id": "hihat",
+      "sound": "hihat",
+      "midiNote": 42,
+      "steps": [
+        { "active": false },
+        { "active": false },
+        { "active": true },
+        { "active": false },
+        { "active": false },
+        { "active": false },
+        { "active": true },
+        { "active": false },
+        { "active": false },
+        { "active": false },
+        { "active": true },
+        { "active": false },
+        { "active": false },
+        { "active": false },
+        { "active": true },
+        { "active": false }
+      ]
+    },
+    {
+      "id": "clap",
+      "sound": "clap",
+      "midiNote": 39,
+      "steps": [
+        { "active": false },
+        { "active": false },
+        { "active": false },
+        { "active": false },
+        { "active": false },
+        { "active": false },
+        { "active": false },
+        { "active": false },
+        { "active": false },
+        { "active": false },
+        { "active": false },
+        { "active": false },
+        { "active": false },
+        { "active": false },
+        { "active": false },
+        { "active": false }
+      ]
+    }
+  ]
+}

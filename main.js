@@ -17,11 +17,11 @@ let midiAccess = null;
 let activeNotes = new Set();
 
 // --- INITIALIZATION ---
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
   svgGrid = document.getElementById("sequencer");
   audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-  loadInstruments();
+  await loadInstruments();
   drawGrid();
   setupControls();
   setupMIDI();
