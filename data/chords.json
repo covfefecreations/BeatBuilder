@@ -1,0 +1,14 @@
+{
+  "progressions": [
+    {"id":"p1","name":"The Pop Standard","chord_sequence":["C","G","Am","F"],"description":"Optimistic yet emotionally resonant","emotional_character":"Hopeful, anthemic, bittersweet optimism"},
+    {"id":"p2","name":"The Minor Climb","chord_sequence":["Am","G","F","G"],"description":"Dark, driving progression","emotional_character":"Urgent, determined"},
+    {"id":"p3","name":"The Descending Resolution","chord_sequence":["C","G","Am","Em","F","C","F","G"],"description":"Cinematic, narrative","emotional_character":"Complete, satisfying"},
+    {"id":"p4","name":"The Tension Builder","chord_sequence":["Am","F","C","G"],"description":"Anticipation and payoff","emotional_character":"Melancholic → hopeful → triumphant"},
+    {"id":"p5","name":"The Jazzy Resolve","chord_sequence":["Fmaj7","G7","Em7","Am"],"description":"Dreamy, sophisticated","emotional_character":"Introspective"},
+    {"id":"p6","name":"The Emotional Roller Coaster","chord_sequence":["C","Em","Am","F"],"description":"Wistful, nostalgic","emotional_character":"Sweet sadness"},
+    {"id":"p7","name":"The Retro Soul","chord_sequence":["C","Am","Dm","G"],"description":"Warm, nostalgic","emotional_character":"Timeless"},
+    {"id":"p8","name":"The Hypnotic Loop","chord_sequence":["Am","G","F","G"],"description":"Trance-like modal quality","emotional_character":"Hypnotic"},
+    {"id":"p9","name":"The Surprise Turn","chord_sequence":["C","F","Bb","F"],"description":"Mixolydian color","emotional_character":"Confident, rebellious"},
+    {"id":"p10","name":"The Minor Storyteller","chord_sequence":["Am","Dm","G","C"],"description":"Question-and-answer arc","emotional_character":"Narrative"}
+  ]
+}

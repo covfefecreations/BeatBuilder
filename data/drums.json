@@ -1,0 +1,16 @@
+{
+  "tutorialTitle": "Rhythm/Groove Building Reference Guide",
+  "tempoBPM": 110,
+  "key": "A Minor",
+  "soundPalette": [
+    {"name":"Kick"},{"name":"Kick2"},{"name":"Sub Kick"},{"name":"Snare"},
+    {"name":"Clap"},{"name":"Open Hat"},{"name":"Closed Hat"},{"name":"Tom"},{"name":"Wood"}
+  ],
+  "grooves":[
+    {"name":"Intro","bars":[{"barNumber":1,"notation":{"Kick":"X - - - - - - - X - - - - - - -","Closed Hat":"X - - - X - - - X - - - X - - -"}},{"barNumber":2,"notation":{"Kick":"X - - - - - - - X - - - - - - -","Snare":"- - - - X - - - - - - - X - - -"}},{"barNumber":3,"notation":{"Kick":"X - - - - - - - X - - - - - - -","Snare":"- - - - X - - - - - - - X - - -","Open Hat":"- - - - - - - X - - - - - - - X","Closed Hat":"X - X - - - X - X - X - - - X -"}},{"barNumber":4,"notation":{"Kick":"X - - - - - - - X - - - - - - -","Sub Kick":"X - - - - - - - X - - - - - - -","Snare":"- - - - X - - - - - - - X - x x","Clap":"- - - - X - - - - - - - X - - -","Tom":"- - - - - - - - - - - - - X X -"}}]},
+    {"name":"Chorus","bars":[{"barNumber":5,"notation":{"Kick":"X - - - - - X - X - - - - - - -","Kick2":"- - - - - - - - - - - x - - - -","Sub Kick":"X - - - - - - - X - - - - - - -","Snare":"- - - - X - - - - - - - X - - -","Closed Hat":"X - X - - - X - X - X - - - X -"}},{"barNumber":6,"notation":{"Kick":"X - - - - - X - X - - - - - - -","Closed Hat":"X - X - - - X - X - X - - - X -"}},{"barNumber":7,"notation":{"Kick":"X - - - - - X - X - - - - - X -","Kick2":"- - - x - - - - - - - x - - - x"}},{"barNumber":8,"notation":{"Kick":"X - - - - - X - X - - - - - - -","Closed Hat":"X - X - - - X - X - X - - - X -"}}]},
+    {"name":"Verse","bars":[{"barNumber":13,"notation":{"Kick":"X - - - - - - - X - - - - - - -","Snare":"- - - - X - - - - - - - X - - -","Open Hat":"- - - - - - - X - - - - - - - -","Closed Hat":"X - X - X - X - X - X - X - X -"}},{"barNumber":15,"notation":{"Kick":"X - - - - - - - X - - - - - - -","Snare":"- - - - x X - - x - - - x X - - -","Closed Hat":"X - X - X - X - X - X - X - X -"}},{"barNumber":17,"notation":{"Kick":"X - - - - - - - X - - - - - - -","Kick2":"- - - - - - X - - - - - - - X -"}},{"barNumber":25,"notation":{"Kick":"X - - - - - X - X - - - - - X -","Kick2":"- - - - - - - - - - - x - - - x","Sub Kick":"X - - - - - - - X - - - - - X -"}}]},
+    {"name":"Outro","bars":[{"barNumber":29,"notation":{"Kick":"X - - - - - X - X - - - - - X -","Kick2":"- - - - - - - - - - - x - - - -","Snare":"- - - - X - - - - - - - X - - -","Closed Hat":"X - X - - - X - X - X - - - X -"}},{"barNumber":32,"notation":{"Kick":"X - - - - - - - - - - - - - - -"}}]}
+  ],
+  "grooveAnalysis":{"sections":[{"sectionName":"Intro","barRange":"1-4"},{"sectionName":"Chorus","barRange":"5-12"},{"sectionName":"Verse","barRange":"13-28"},{"sectionName":"Outro","barRange":"29-32"}],"keyConcepts":["Syncopation","Ghost Notes","Call and Response","Layering","Space"],"implementationTips":["Ghost notes at 30-50% velocity","Open hat ring","Sub kick -6 to -12dB","HPF wood under 800Hz"]}
+}

@@ -1,0 +1,15 @@
+{
+  "module":"Bass Rhythms",
+  "examples":[
+    {"id":"bass_1","title":"The Foundation","progression":"C - G - Am - F","energy":"Minimal","notation":"C---- | G---- | A---- | F----"},
+    {"id":"bass_2","title":"The Heartbeat","progression":"Am - G - F - G","energy":"Low-Medium","notation":"A A A A | G G G G | F F F F | G G G G"},
+    {"id":"bass_3","title":"The Bounce","progression":"C - G - Am - F","energy":"Medium","notation":"C g C g | G d G d | A e A e | F c F c"},
+    {"id":"bass_4","title":"The Funk Foundation","progression":"Am - Am - Am - Am","energy":"High","notation":"Syncopated 16ths with ghost notes"},
+    {"id":"bass_5","title":"The Walking Line","progression":"Cmaj7 - Am7 - Dm7 - G7","energy":"Medium","notation":"C E G B | A G F E | D F A C | G F E D"},
+    {"id":"bass_6","title":"The Disco Drive","progression":"Am - F - C - G","energy":"Medium-High","notation":"A a A · | F f F · | C c C · | G g G ·"},
+    {"id":"bass_7","title":"The Reggae One-Drop","progression":"C - Am - F - G","energy":"Medium","notation":"notes on +'s (offbeat)"},
+    {"id":"bass_8","title":"The Anticipation","progression":"C - G - Am - F","energy":"Medium-High","notation":"anticipation on 'a' of beat 4"},
+    {"id":"bass_9","title":"The Pedal Tone Groove","progression":"Am - F - C - G","energy":"Medium","notation":"A pedal throughout with re-attacks"},
+    {"id":"bass_10","title":"The Chromatic Climber","progression":"C - Em - F - G","energy":"Medium","notation":"chromatic connectors"}
+  ]
+}
