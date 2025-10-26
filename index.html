@@ -3,28 +3,29 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SVG Groove Sequencer</title>
+  <title>SVG Beat Sequencer</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <header>
-    <h1>SVG Groove Sequencer</h1>
+    <h1>SVG Beat Sequencer</h1>
     <div class="controls">
-      <button id="loadJSON">Load Groove JSON</button>
-      <button id="play">▶ Play</button>
-      <button id="stop">⏹ Stop</button>
-      <button id="export">⏎ Export MIDI</button>
+      <button id="playBtn">▶ Play</button>
+      <button id="stopBtn">■ Stop</button>
+      <label for="bpm">BPM</label>
+      <input id="bpm" type="number" min="60" max="200" value="120" />
+      <button id="exportBtn">Export Pattern</button>
     </div>
   </header>
 
-  <main id="sequencer-container">
-    <svg id="sequencer" viewBox="0 0 1280 480" preserveAspectRatio="xMidYMid meet"></svg>
+  <main>
+    <svg id="sequencer" viewBox="0 0 800 400" preserveAspectRatio="xMidYMid meet"></svg>
   </main>
 
   <footer>
-    <p>SVG Sequencer • JSON-driven groove visualizer</p>
+    <p>🎧 Built with Web Audio + SVG | JSON Modular System Ready</p>
   </footer>
 
-  <script src="main.js" type="module"></script>
+  <script src="main.js"></script>
 </body>
 </html>
