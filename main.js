@@ -1,167 +1,144 @@
-// main.js
-// Lightweight entry that wires the redesigned index.html to the modular src/ app
-// It imports src/app.js (the heavier bootstrap) so we don't duplicate logic.
-// Make sure src/app.js either exports an `init` function or runs on import (we accounted for both).
+import * as Tone from "https://cdn.skypack.dev/tone@14.8.39";
 
-async function bootstrap() {
-  // try to import the modular app bootstrap
-  let appModule = null;
-  try {
-    appModule = await import('./src/app.js');
-  } catch (err) {
-    console.error("Failed to import src/app.js — make sure it exists and is valid ESM.", err);
-    showErrorBanner("Internal error: failed to load application module (src/app.js). Check console.");
-    return;
-  }
+let svg, playhead;
+let isPlaying = false;
+let currentStep = 0;
+let totalSteps = 16;
+let tempo = 110;
+let sequenceData = [];
+let drumSampler;
 
-  // if module exports init, call it and capture returned objects (optional)
-  if (appModule && typeof appModule.init === 'function') {
-    try {
-      const api = await appModule.init();
-      // expose API hooks to window for dev convenience
-      window.AppAPI = api || {};
-      wireUI(api);
-    } catch (e) {
-      console.error("app.init() failed", e);
-      showErrorBanner("Application bootstrap failed. See console.");
-    }
-  } else {
-    // module likely executed on import (old style), so try to find global App API or simply wire basic UI.
-    console.info("src/app.js did not export init(). Assuming it autostarts on import.");
-    // give a small delay to allow it to create expected globals (audioEngine/sequencer)
-    setTimeout(() => {
-      const possible = window.AppAPI || window.__App || null;
-      wireUI(possible);
-    }, 350);
-  }
+document.addEventListener("DOMContentLoaded", init);
+
+async function init() {
+  svg = document.getElementById("sequencer");
+  playhead = createPlayhead();
+  svg.appendChild(playhead);
+  
+  document.getElementById("loadJSON").addEventListener("click", loadJSON);
+  document.getElementById("play").addEventListener("click", startPlayback);
+  document.getElementById("stop").addEventListener("click", stopPlayback);
+  document.getElementById("export").addEventListener("click", exportMIDI);
+
+  await setupSampler();
 }
 
-/* Minimal UI attachment to keep page interactive even if internals vary */
-function wireUI(api = null) {
-  // expose quick helpers
-  const playBtn = document.getElementById('play');
-  const stopBtn = document.getElementById('stop');
-  const loadJsonBtn = document.getElementById('load-json');
-  const exportJsonBtn = document.getElementById('export-json');
-  const exportMidiBtn = document.getElementById('export-midi');
-  const bpmInput = document.getElementById('bpm');
-  const transportPos = document.getElementById('transport-position');
-
-  // basic actions — if app provides functions, use them; otherwise show friendly console hint
-  playBtn.onclick = async () => {
-    if (api && typeof api.start === 'function') {
-      const bpm = Number(bpmInput.value || 110);
-      await api.start(bpm);
-    } else {
-      console.warn("Play pressed — app.start() not found. If you migrated src/app.js, export an init() that returns { start, stop, load, ... }");
-      alert("Play pressed — but app backend not found. Check console.");
-    }
-  };
-
-  stopBtn.onclick = () => {
-    if (api && typeof api.stop === 'function') {
-      api.stop();
-    } else {
-      console.warn("Stop pressed — app.stop() not found.");
-    }
-  };
-
-  loadJsonBtn.onclick = () => {
-    if (api && typeof api.loadJson === 'function') {
-      api.loadJson();
-    } else {
-      // fallback: emit a click for the app bootstrap to listen to (src/app.js listens for "load-json" by id in earlier code)
-      const evt = new CustomEvent('requestLoadJson');
-      window.dispatchEvent(evt);
-      console.info("Requested load JSON (no direct API). If src/app.js listens for #load-json it will respond.");
-    }
-  };
-
-  exportJsonBtn.onclick = () => {
-    if (api && typeof api.exportJSON === 'function') {
-      api.exportJSON();
-    } else {
-      console.warn("Export JSON not available on app API.");
-      alert("No export API found. Check console for details.");
-    }
-  };
-
-  exportMidiBtn.onclick = () => {
-    if (api && typeof api.exportMIDI === 'function') {
-      api.exportMIDI();
-    } else {
-      console.warn("Export MIDI not available on app API.");
-      alert("No export API found. Check console for details.");
-    }
-  };
-
-  // keep transport display updated if api provides bus with position data
-  if (api && api.transport && typeof api.transport.getPosition === 'function') {
-    setInterval(() => {
-      transportPos.textContent = api.transport.getPosition();
-    }, 120);
-  } else {
-    // fallback: show the Tone.Transport position if Tone is loaded globally
-    if (window.Tone) {
-      setInterval(() => {
-        try { transportPos.textContent = Tone.Transport.position; } catch (e) {}
-      }, 120);
-    }
-  }
-
-  // small convenience: update loop bars into app if present
-  const loopBarsEl = document.getElementById('loop-bars');
-  loopBarsEl.onchange = () => {
-    if (api && typeof api.setLoopBars === 'function') api.setLoopBars(Number(loopBarsEl.value));
-  };
-
-  // track list population: if app exposes a track list getter, populate UI
-  const trackListEl = document.getElementById('track-list');
-  async function refreshTracks() {
-    trackListEl.innerHTML = '';
-    if (api && typeof api.getTracks === 'function') {
-      const tracks = await api.getTracks();
-      if (!tracks || tracks.length === 0) {
-        trackListEl.innerHTML = `<div class="track-empty">No tracks loaded — click “Load JSON”</div>`;
-        return;
-      }
-      tracks.forEach(t => {
-        const row = document.createElement('div');
-        row.className = 'track-row';
-        row.innerHTML = `<div class="color" style="background:${t.color||'#4c87c7'}"></div>
-                         <div class="meta">${t.title || t.id}</div>
-                         <div class="meta-mini" style="font-size:0.78rem;color:#9fb3d0">${t.meta?.type||''}</div>`;
-        row.onclick = () => {
-          // emit custom event selecting this track (app may listen)
-          const evt = new CustomEvent('selectTrack', { detail: t });
-          window.dispatchEvent(evt);
-        };
-        trackListEl.appendChild(row);
-      });
-    } else {
-      trackListEl.innerHTML = `<div class="track-empty">No track API — waiting for app to load</div>`;
-    }
-  }
-
-  // refresh periodically if API available
-  refreshTracks();
-  setInterval(refreshTracks, 1500);
+async function setupSampler() {
+  drumSampler = new Tone.Sampler({
+    urls: {
+      Kick: "https://tonejs.github.io/audio/drum-samples/breakbeat/Kick.wav",
+      Snare: "https://tonejs.github.io/audio/drum-samples/breakbeat/Snare.wav",
+      Hat: "https://tonejs.github.io/audio/drum-samples/breakbeat/HiHat.wav",
+      Clap: "https://tonejs.github.io/audio/drum-samples/breakbeat/Clap.wav"
+    },
+    onload: () => console.log("Sampler loaded!")
+  }).toDestination();
 }
 
-function showErrorBanner(msg) {
-  const el = document.createElement('div');
-  el.style.position = 'fixed';
-  el.style.left = '12px';
-  el.style.right = '12px';
-  el.style.top = '12px';
-  el.style.padding = '12px';
-  el.style.background = '#ff4d4f';
-  el.style.color = '#fff';
-  el.style.borderRadius = '10px';
-  el.style.zIndex = 9999;
-  el.innerText = msg;
-  document.body.appendChild(el);
-  setTimeout(()=>el.remove(), 6000);
+async function loadJSON() {
+  const response = await fetch("drumkit.json");
+  const data = await response.json();
+  sequenceData = data.grooves[0].bars[0].notation; // First groove, first bar
+  renderSequencer(sequenceData);
 }
 
-bootstrap();
+function renderSequencer(data) {
+  svg.innerHTML = "";
+  svg.appendChild(playhead);
+
+  const rows = Object.keys(data);
+  const cellWidth = 60;
+  const cellHeight = 30;
+
+  rows.forEach((instrument, rowIndex) => {
+    for (let step = 0; step < 16; step++) {
+      const x = step * cellWidth + 50;
+      const y = rowIndex * cellHeight + 50;
+
+      const isActive = data[instrument].split(" ")[step] === "X";
+      const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+      rect.setAttribute("x", x);
+      rect.setAttribute("y", y);
+      rect.setAttribute("width", cellWidth - 4);
+      rect.setAttribute("height", cellHeight - 4);
+      rect.setAttribute("rx", 6);
+      rect.setAttribute("ry", 6);
+      rect.setAttribute("class", `note-cell ${isActive ? "note-active" : ""}`);
+      rect.dataset.instrument = instrument;
+      rect.dataset.step = step;
+
+      rect.addEventListener("click", toggleNote);
+      svg.appendChild(rect);
+    }
+
+    const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    label.textContent = instrument;
+    label.setAttribute("x", 10);
+    label.setAttribute("y", rowIndex * cellHeight + 70);
+    label.setAttribute("fill", "#bbb");
+    label.setAttribute("font-size", "12px");
+    svg.appendChild(label);
+  });
+}
+
+function toggleNote(e) {
+  const rect = e.target;
+  rect.classList.toggle("note-active");
+  rect.classList.toggle("note-pulse");
+  setTimeout(() => rect.classList.remove("note-pulse"), 300);
+}
+
+function createPlayhead() {
+  const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+  line.setAttribute("x1", 50);
+  line.setAttribute("y1", 40);
+  line.setAttribute("x2", 50);
+  line.setAttribute("y2", 400);
+  line.setAttribute("class", "playhead");
+  return line;
+}
+
+function startPlayback() {
+  if (isPlaying) return;
+  isPlaying = true;
+  Tone.Transport.bpm.value = tempo;
+  Tone.Transport.scheduleRepeat(stepPlayback, "16n");
+  Tone.Transport.start();
+}
+
+function stopPlayback() {
+  isPlaying = false;
+  Tone.Transport.stop();
+  currentStep = 0;
+  movePlayhead();
+}
+
+function stepPlayback(time) {
+  movePlayhead();
+  const activeNotes = Array.from(document.querySelectorAll(".note-active"));
+  activeNotes.forEach((rect) => {
+    const step = parseInt(rect.dataset.step);
+    const instrument = rect.dataset.instrument;
+    if (step === currentStep) {
+      drumSampler.triggerAttack(instrument, time);
+      animateCell(rect);
+    }
+  });
+
+  currentStep = (currentStep + 1) % totalSteps;
+}
+
+function movePlayhead() {
+  const x = currentStep * 60 + 50;
+  playhead.setAttribute("x1", x);
+  playhead.setAttribute("x2", x);
+}
+
+function animateCell(rect) {
+  rect.classList.add("note-hit");
+  setTimeout(() => rect.classList.remove("note-hit"), 150);
+}
+
+function exportMIDI() {
+  alert("MIDI export coming soon!");
+}
