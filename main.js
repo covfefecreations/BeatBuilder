@@ -1,144 +1,181 @@
-import * as Tone from "https://cdn.skypack.dev/tone@14.8.39";
+// === main.js ===
+// SVG-BASED SEQUENCER CORE
+// Handles visual grid rendering, audio routing, and interaction logic.
 
-let svg, playhead;
+// --- GLOBALS ---
+let audioCtx;
 let isPlaying = false;
 let currentStep = 0;
-let totalSteps = 16;
-let tempo = 110;
-let sequenceData = [];
-let drumSampler;
+let bpm = 120;
+let sequencerData = [];
+let svgGrid;
+let stepInterval;
+let stepCount = 16;
 
-document.addEventListener("DOMContentLoaded", init);
+// For MIDI
+let midiAccess = null;
+let activeNotes = new Set();
 
-async function init() {
-  svg = document.getElementById("sequencer");
-  playhead = createPlayhead();
-  svg.appendChild(playhead);
-  
-  document.getElementById("loadJSON").addEventListener("click", loadJSON);
-  document.getElementById("play").addEventListener("click", startPlayback);
-  document.getElementById("stop").addEventListener("click", stopPlayback);
-  document.getElementById("export").addEventListener("click", exportMIDI);
+// --- INITIALIZATION ---
+document.addEventListener("DOMContentLoaded", () => {
+  svgGrid = document.getElementById("sequencer");
+  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-  await setupSampler();
+  loadInstruments();
+  drawGrid();
+  setupControls();
+  setupMIDI();
+});
+
+// --- LOAD JSON INSTRUMENTS ---
+async function loadInstruments() {
+  try {
+    const response = await fetch("instruments/drumkit.json");
+    const data = await response.json();
+    sequencerData = data.tracks || [];
+  } catch (e) {
+    console.error("Error loading instruments:", e);
+  }
 }
 
-async function setupSampler() {
-  drumSampler = new Tone.Sampler({
-    urls: {
-      Kick: "https://tonejs.github.io/audio/drum-samples/breakbeat/Kick.wav",
-      Snare: "https://tonejs.github.io/audio/drum-samples/breakbeat/Snare.wav",
-      Hat: "https://tonejs.github.io/audio/drum-samples/breakbeat/HiHat.wav",
-      Clap: "https://tonejs.github.io/audio/drum-samples/breakbeat/Clap.wav"
-    },
-    onload: () => console.log("Sampler loaded!")
-  }).toDestination();
-}
+// --- DRAW SVG GRID ---
+function drawGrid() {
+  svgGrid.innerHTML = "";
+  const width = svgGrid.clientWidth;
+  const height = svgGrid.clientHeight;
+  const rowHeight = height / sequencerData.length;
+  const colWidth = width / stepCount;
 
-async function loadJSON() {
-  const response = await fetch("drumkit.json");
-  const data = await response.json();
-  sequenceData = data.grooves[0].bars[0].notation; // First groove, first bar
-  renderSequencer(sequenceData);
-}
-
-function renderSequencer(data) {
-  svg.innerHTML = "";
-  svg.appendChild(playhead);
-
-  const rows = Object.keys(data);
-  const cellWidth = 60;
-  const cellHeight = 30;
-
-  rows.forEach((instrument, rowIndex) => {
-    for (let step = 0; step < 16; step++) {
-      const x = step * cellWidth + 50;
-      const y = rowIndex * cellHeight + 50;
-
-      const isActive = data[instrument].split(" ")[step] === "X";
+  sequencerData.forEach((track, rowIndex) => {
+    for (let step = 0; step < stepCount; step++) {
       const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-      rect.setAttribute("x", x);
-      rect.setAttribute("y", y);
-      rect.setAttribute("width", cellWidth - 4);
-      rect.setAttribute("height", cellHeight - 4);
+      rect.setAttribute("x", step * colWidth);
+      rect.setAttribute("y", rowIndex * rowHeight);
+      rect.setAttribute("width", colWidth - 2);
+      rect.setAttribute("height", rowHeight - 2);
       rect.setAttribute("rx", 6);
       rect.setAttribute("ry", 6);
-      rect.setAttribute("class", `note-cell ${isActive ? "note-active" : ""}`);
-      rect.dataset.instrument = instrument;
+      rect.classList.add("step");
+      rect.dataset.row = rowIndex;
       rect.dataset.step = step;
 
-      rect.addEventListener("click", toggleNote);
-      svg.appendChild(rect);
+      rect.addEventListener("click", toggleStep);
+      svgGrid.appendChild(rect);
     }
-
-    const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
-    label.textContent = instrument;
-    label.setAttribute("x", 10);
-    label.setAttribute("y", rowIndex * cellHeight + 70);
-    label.setAttribute("fill", "#bbb");
-    label.setAttribute("font-size", "12px");
-    svg.appendChild(label);
   });
 }
 
-function toggleNote(e) {
-  const rect = e.target;
-  rect.classList.toggle("note-active");
-  rect.classList.toggle("note-pulse");
-  setTimeout(() => rect.classList.remove("note-pulse"), 300);
+// --- TOGGLE STEP (USER EDITING) ---
+function toggleStep(event) {
+  const rect = event.target;
+  const row = rect.dataset.row;
+  const step = rect.dataset.step;
+  const isActive = rect.classList.toggle("active");
+
+  sequencerData[row].steps[step].active = isActive;
 }
 
-function createPlayhead() {
-  const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-  line.setAttribute("x1", 50);
-  line.setAttribute("y1", 40);
-  line.setAttribute("x2", 50);
-  line.setAttribute("y2", 400);
-  line.setAttribute("class", "playhead");
-  return line;
-}
-
-function startPlayback() {
+// --- PLAYBACK LOOP ---
+function startSequencer() {
   if (isPlaying) return;
   isPlaying = true;
-  Tone.Transport.bpm.value = tempo;
-  Tone.Transport.scheduleRepeat(stepPlayback, "16n");
-  Tone.Transport.start();
-}
-
-function stopPlayback() {
-  isPlaying = false;
-  Tone.Transport.stop();
   currentStep = 0;
-  movePlayhead();
+  const stepTime = (60 / bpm) / 4; // Sixteenth note timing
+
+  stepInterval = setInterval(() => {
+    playStep(currentStep);
+    highlightStep(currentStep);
+    currentStep = (currentStep + 1) % stepCount;
+  }, stepTime * 1000);
 }
 
-function stepPlayback(time) {
-  movePlayhead();
-  const activeNotes = Array.from(document.querySelectorAll(".note-active"));
-  activeNotes.forEach((rect) => {
-    const step = parseInt(rect.dataset.step);
-    const instrument = rect.dataset.instrument;
-    if (step === currentStep) {
-      drumSampler.triggerAttack(instrument, time);
-      animateCell(rect);
+function stopSequencer() {
+  isPlaying = false;
+  clearInterval(stepInterval);
+  resetHighlights();
+}
+
+function playStep(step) {
+  sequencerData.forEach(track => {
+    const note = track.steps[step];
+    if (note.active) {
+      triggerSound(track.sound, track.midiNote);
     }
   });
-
-  currentStep = (currentStep + 1) % totalSteps;
 }
 
-function movePlayhead() {
-  const x = currentStep * 60 + 50;
-  playhead.setAttribute("x1", x);
-  playhead.setAttribute("x2", x);
+function triggerSound(sound, midiNote) {
+  // Simplified oscillator-based drum/synth
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+
+  osc.type = "sine";
+  osc.frequency.value = midiNoteToFreq(midiNote);
+  gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.4);
+
+  osc.connect(gain).connect(audioCtx.destination);
+  osc.start();
+  osc.stop(audioCtx.currentTime + 0.5);
 }
 
-function animateCell(rect) {
-  rect.classList.add("note-hit");
-  setTimeout(() => rect.classList.remove("note-hit"), 150);
+function midiNoteToFreq(note) {
+  return 440 * Math.pow(2, (note - 69) / 12);
 }
 
-function exportMIDI() {
-  alert("MIDI export coming soon!");
+// --- VISUAL HIGHLIGHTING ---
+function highlightStep(step) {
+  resetHighlights();
+  const rects = svgGrid.querySelectorAll(`[data-step="${step}"]`);
+  rects.forEach(r => r.classList.add("highlight"));
+}
+
+function resetHighlights() {
+  svgGrid.querySelectorAll(".highlight").forEach(r => r.classList.remove("highlight"));
+}
+
+// --- CONTROLS ---
+function setupControls() {
+  document.getElementById("playBtn").addEventListener("click", startSequencer);
+  document.getElementById("stopBtn").addEventListener("click", stopSequencer);
+  document.getElementById("exportBtn").addEventListener("click", exportPattern);
+  document.getElementById("bpm").addEventListener("change", e => {
+    bpm = parseInt(e.target.value);
+  });
+}
+
+// --- EXPORT PATTERN ---
+function exportPattern() {
+  const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(sequencerData, null, 2));
+  const dlAnchor = document.createElement("a");
+  dlAnchor.setAttribute("href", dataStr);
+  dlAnchor.setAttribute("download", "pattern.json");
+  dlAnchor.click();
+}
+
+// --- MIDI INPUT SETUP ---
+async function setupMIDI() {
+  if (navigator.requestMIDIAccess) {
+    try {
+      midiAccess = await navigator.requestMIDIAccess();
+      midiAccess.inputs.forEach(input => {
+        input.onmidimessage = handleMIDIMessage;
+      });
+    } catch (err) {
+      console.warn("MIDI access denied:", err);
+    }
+  }
+}
+
+function handleMIDIMessage(event) {
+  const [status, note, velocity] = event.data;
+  const cmd = status >> 4;
+  const channel = status & 0xf;
+
+  if (cmd === 9 && velocity > 0) { // Note on
+    activeNotes.add(note);
+    triggerSound("midi", note);
+  } else if (cmd === 8 || velocity === 0) { // Note off
+    activeNotes.delete(note);
+  }
 }
