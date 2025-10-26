@@ -1,106 +1,30 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Modular Beat Builder — UI</title>
-
-  <!-- page styling -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SVG Groove Sequencer</title>
   <link rel="stylesheet" href="style.css" />
-
-  <!-- Tone & Midi & MidiWriter are loaded by src modules if needed (kept in app.js) -->
 </head>
 <body>
-  <div id="app" class="app">
-    <header class="app-header">
-      <div class="brand">
-        <h1>Modular Beat Builder</h1>
-        <p class="tag">JSON → SVG Sequencer • Live MIDI • Export</p>
-      </div>
+  <header>
+    <h1>SVG Groove Sequencer</h1>
+    <div class="controls">
+      <button id="loadJSON">Load Groove JSON</button>
+      <button id="play">▶ Play</button>
+      <button id="stop">⏹ Stop</button>
+      <button id="export">⏎ Export MIDI</button>
+    </div>
+  </header>
 
-      <div class="header-controls">
-        <button id="load-json" class="btn">Load JSON</button>
-        <button id="play" class="btn green">Play</button>
-        <button id="stop" class="btn red">Stop</button>
+  <main id="sequencer-container">
+    <svg id="sequencer" viewBox="0 0 1280 480" preserveAspectRatio="xMidYMid meet"></svg>
+  </main>
 
-        <label class="small">Quantize
-          <select id="quantize" class="select">
-            <option value="4n">Bar (4n)</option>
-            <option value="8n">8th (8n)</option>
-            <option value="16n" selected>16th (16n)</option>
-            <option value="32n">32nd (32n)</option>
-          </select>
-        </label>
+  <footer>
+    <p>SVG Sequencer • JSON-driven groove visualizer</p>
+  </footer>
 
-        <button id="record-midi" class="btn">Record MIDI</button>
-        <button id="stop-midi" class="btn">Stop Rec</button>
-
-        <button id="export-json" class="btn">Export JSON</button>
-        <button id="export-midi" class="btn">Export MIDI</button>
-      </div>
-    </header>
-
-    <main class="main">
-      <aside class="left-col">
-        <div class="panel">
-          <h3>Tracks</h3>
-          <div id="track-list" class="track-list">
-            <!-- track rows populated by main.js / app -->
-            <div class="track-empty">No tracks loaded — click “Load JSON”</div>
-          </div>
-        </div>
-
-        <div class="panel">
-          <h3>Session</h3>
-          <div class="kv">
-            <label>BPM</label>
-            <input id="bpm" type="number" value="110" min="40" max="240" />
-          </div>
-          <div class="kv">
-            <label>Loop Length (bars)</label>
-            <input id="loop-bars" type="number" value="4" min="1" max="16" />
-          </div>
-          <div class="panel-note">Tip: Load `bass.json`, `drums.json`, `chords.json` in /data/</div>
-        </div>
-      </aside>
-
-      <section class="center-col">
-        <div class="sequencer-toolbar">
-          <div class="legend">
-            <span class="dot drum"></span> Drum
-            <span class="dot bass"></span> Bass
-            <span class="dot chord"></span> Chord
-          </div>
-          <div class="cursor-info">Transport: <span id="transport-position">0:0:0</span></div>
-        </div>
-
-        <div id="sequencer" class="sequencer">
-          <!-- visualSequencer will inject an SVG here -->
-        </div>
-      </section>
-
-      <aside class="right-col">
-        <div class="panel">
-          <h3>Inspector</h3>
-          <div id="inspector">
-            <div class="ins-empty">Select a track or cell to edit.</div>
-          </div>
-        </div>
-
-        <div class="panel">
-          <h3>Actions</h3>
-          <button id="clear-track" class="btn warning">Clear Selected Track</button>
-          <button id="duplicate-track" class="btn">Duplicate Track</button>
-        </div>
-      </aside>
-    </main>
-
-    <footer class="app-footer">
-      <small>Built for creative workflows • MIDI & JSON-first</small>
-    </footer>
-  </div>
-
-  <!-- main entry (ES module) -->
-  <script type="module" src="main.js"></script>
+  <script src="main.js" type="module"></script>
 </body>
 </html>
