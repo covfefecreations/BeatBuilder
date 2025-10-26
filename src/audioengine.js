@@ -4,7 +4,7 @@
 // - schedule patterns (array of {time (beats), note, velocity, active})
 // - start/stop Transport
 // - record incoming MIDI note events (timestamped) and quantize into patterns
-import * as Tone from "tone";
+// Note: Expects Tone.js to be loaded globally from CDN
 
 export default class AudioEngine {
   constructor() {

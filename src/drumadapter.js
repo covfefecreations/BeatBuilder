@@ -1,36 +1,69 @@
 // drumAdapter.js
+// Parses drums.json format with grooves, bars, and notation strings
 export default class DrumAdapter {
-  static parseKit(kit, bpm = 120) {
-    const pattern = [];
+  static parseGroove(groove, bpm = 120) {
+    const tracks = {};
 
-    // iterate each instrument line
-    Object.entries(kit.patterns).forEach(([instrument, steps]) => {
-      steps.split("").forEach((step, i) => {
-        if (step === "1") {
-          pattern.push({
-            time: i * (4 / steps.length), // quantized step position
-            note: instrument,             // symbolic label (Kick, Snare, etc.)
-            velocity: 1.0,
-            active: true
-          });
+    // Collect all notation from all bars in this groove
+    groove.bars.forEach((bar, barIndex) => {
+      Object.entries(bar.notation).forEach(([instrument, notation]) => {
+        if (!tracks[instrument]) {
+          tracks[instrument] = { instrument, pattern: [] };
         }
+
+        // Parse notation string: "X - - - X - - -" etc.
+        const chars = notation.replace(/\s+/g, '').split('');
+        chars.forEach((char, step) => {
+          if (char.toUpperCase() === 'X' || char === 'x') {
+            const velocity = char === 'x' ? 0.5 : 1.0; // lowercase x = ghost note
+            const timeInBeats = barIndex * 16 + step; // 16 steps per bar
+            tracks[instrument].pattern.push({
+              time: timeInBeats / 4, // convert to quarter note beats
+              note: instrument,
+              velocity,
+              active: true
+            });
+          }
+        });
       });
     });
 
-    return {
-      id: kit.id,
-      title: kit.name || "Unnamed Kit",
+    // Convert to array of track objects
+    return Object.values(tracks).map(track => ({
+      id: `${groove.name.toLowerCase().replace(/\s+/g, '_')}_${track.instrument.toLowerCase().replace(/\s+/g, '_')}`,
+      title: `${track.instrument} (${groove.name})`,
       bpm,
-      pattern,
+      pattern: track.pattern.sort((a, b) => a.time - b.time),
       meta: {
-        genre: kit.genre || "Generic",
-        description: kit.description || "",
-        sampleSet: kit.samples || []
+        groove: groove.name,
+        instrument: track.instrument,
+        type: "drum"
       }
-    };
+    }));
   }
 
   static loadFromJSON(drumData, bpm = 120) {
-    return drumData.kits.map((kit) => this.parseKit(kit, bpm));
+    // Use the specified BPM from data if available
+    const dataBpm = drumData.tempoBPM || bpm;
+
+    // Return all grooves as separate track sets
+    if (!drumData.grooves || drumData.grooves.length === 0) return [];
+
+    // For now, just load the first groove (Intro)
+    // You can modify this to load all grooves or let user select
+    const firstGroove = drumData.grooves[0];
+    return this.parseGroove(firstGroove, dataBpm);
+  }
+
+  static loadAllGrooves(drumData, bpm = 120) {
+    const dataBpm = drumData.tempoBPM || bpm;
+    const allTracks = [];
+
+    drumData.grooves.forEach(groove => {
+      const tracks = this.parseGroove(groove, dataBpm);
+      allTracks.push(...tracks);
+    });
+
+    return allTracks;
   }
 }

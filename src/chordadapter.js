@@ -1,11 +1,11 @@
 // chordAdapter.js
+// Parses chords.json format with progressions
 export default class ChordAdapter {
-  static parseProgression(progression, bpm = 120) {
+  static parseProgression(chordSequence, bpm = 120) {
     const pattern = [];
-    const barLength = 4;
-    const chordSymbols = progression.split("-");
+    const barLength = 4; // Each chord lasts 4 beats (1 bar)
 
-    chordSymbols.forEach((chord, i) => {
+    chordSequence.forEach((chord, i) => {
       pattern.push({
         time: i * barLength,
         note: chord.trim(), // symbolic — expanded later by playback engine
@@ -17,19 +17,26 @@ export default class ChordAdapter {
     return pattern;
   }
 
-  static parseExample(example, bpm = 120) {
+  static parseProgressionObject(progression, bpm = 120) {
     return {
-      id: example.id,
-      title: example.title,
-      pattern: this.parseProgression(example.progression, bpm),
+      id: progression.id,
+      title: progression.name,
+      pattern: this.parseProgression(progression.chord_sequence, bpm),
       bpm,
-      key: example.key || "C",
-      mood: example.mood || "neutral",
-      analysis: example.analysis || ""
+      description: progression.description || "",
+      emotionalCharacter: progression.emotional_character || "",
+      meta: {
+        type: "chord",
+        description: progression.description,
+        emotionalCharacter: progression.emotional_character
+      }
     };
   }
 
   static loadFromJSON(chordData, bpm = 120) {
-    return chordData.examples.map((ex) => this.parseExample(ex, bpm));
+    if (!chordData.progressions) return [];
+    return chordData.progressions.map((prog) =>
+      this.parseProgressionObject(prog, bpm)
+    );
   }
 }
