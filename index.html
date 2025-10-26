@@ -37,7 +37,39 @@
   </header>
 
   <main>
-    <svg id="sequencer" viewBox="0 0 800 400" preserveAspectRatio="xMidYMid meet"></svg>
+    <div class="sequencer-container">
+      <!-- Track Controls Panel -->
+      <div id="trackControls" class="track-controls-panel"></div>
+
+      <!-- Main Sequencer Grid -->
+      <div class="grid-wrapper">
+        <!-- Step Numbers -->
+        <div id="stepNumbers" class="step-numbers"></div>
+
+        <!-- SVG Grid -->
+        <svg id="sequencer" viewBox="0 0 800 400" preserveAspectRatio="xMidYMid meet"></svg>
+      </div>
+    </div>
+
+    <!-- Status Bar -->
+    <div id="statusBar" class="status-bar">
+      <div class="status-item">
+        <span class="status-label">Status:</span>
+        <span id="playStatus" class="status-value">Stopped</span>
+      </div>
+      <div class="status-item">
+        <span class="status-label">Tracks:</span>
+        <span id="trackCount" class="status-value">0</span>
+      </div>
+      <div class="status-item">
+        <span class="status-label">BPM:</span>
+        <span id="bpmDisplay" class="status-value">120</span>
+      </div>
+      <div class="status-item">
+        <span class="status-label">Position:</span>
+        <span id="position" class="status-value">1.1.1</span>
+      </div>
+    </div>
   </main>
 
   <footer>

@@ -33,6 +33,12 @@ let useAdvancedEngine = false;
 let midiAccess = null;
 let activeNotes = new Set();
 
+// Track state (mute/solo/volume)
+let trackStates = [];
+
+// UI Elements
+let playheadElement = null;
+
 // --- INITIALIZATION ---
 document.addEventListener("DOMContentLoaded", async () => {
   svgGrid = document.getElementById("sequencer");
@@ -46,9 +52,13 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   await loadInstruments();
+  initializeTrackStates();
+  renderStepNumbers();
+  renderTrackControls();
   drawGrid();
   setupControls();
   setupAdvancedControls();
+  updateStatusBar();
 
   if (!useAdvancedEngine) {
     setupMIDI(); // Fallback to simple MIDI
@@ -149,31 +159,251 @@ function getMidiNoteForInstrument(name) {
   return midiMap[name] || 40;
 }
 
+// --- INITIALIZE TRACK STATES ---
+function initializeTrackStates() {
+  trackStates = sequencerData.map(() => ({
+    muted: false,
+    solo: false,
+    volume: 100
+  }));
+}
+
+// --- RENDER STEP NUMBERS ---
+function renderStepNumbers() {
+  const stepNumbersContainer = document.getElementById("stepNumbers");
+  if (!stepNumbersContainer) return;
+
+  stepNumbersContainer.innerHTML = "";
+
+  for (let i = 0; i < stepCount; i++) {
+    const stepDiv = document.createElement("div");
+    stepDiv.className = "step-number";
+
+    // Highlight beat starts (every 4 steps)
+    if (i % 4 === 0) {
+      stepDiv.classList.add("beat-start");
+      stepDiv.textContent = (i / 4) + 1; // Show 1, 2, 3, 4
+    } else {
+      stepDiv.textContent = i + 1; // Show all step numbers
+    }
+
+    stepNumbersContainer.appendChild(stepDiv);
+  }
+}
+
+// --- RENDER TRACK CONTROLS ---
+function renderTrackControls() {
+  const trackControlsPanel = document.getElementById("trackControls");
+  if (!trackControlsPanel) return;
+
+  trackControlsPanel.innerHTML = "";
+
+  sequencerData.forEach((track, index) => {
+    const trackControl = document.createElement("div");
+    trackControl.className = "track-control";
+    trackControl.style.borderLeftColor = getTrackColor(track);
+
+    // Track label
+    const label = document.createElement("div");
+    label.className = "track-label";
+    label.textContent = track.sound || `Track ${index + 1}`;
+    label.title = track.sound || `Track ${index + 1}`;
+    trackControl.appendChild(label);
+
+    // Mute/Solo buttons
+    const buttons = document.createElement("div");
+    buttons.className = "track-buttons";
+
+    const muteBtn = document.createElement("button");
+    muteBtn.className = "track-btn";
+    muteBtn.textContent = "M";
+    muteBtn.title = "Mute";
+    muteBtn.dataset.track = index;
+    muteBtn.addEventListener("click", (e) => toggleMute(index, e.target));
+
+    const soloBtn = document.createElement("button");
+    soloBtn.className = "track-btn";
+    soloBtn.textContent = "S";
+    soloBtn.title = "Solo";
+    soloBtn.dataset.track = index;
+    soloBtn.addEventListener("click", (e) => toggleSolo(index, e.target));
+
+    buttons.appendChild(muteBtn);
+    buttons.appendChild(soloBtn);
+    trackControl.appendChild(buttons);
+
+    // Volume slider
+    const volumeDiv = document.createElement("div");
+    volumeDiv.className = "track-volume";
+
+    const volumeLabel = document.createElement("span");
+    volumeLabel.className = "track-volume-label";
+    volumeLabel.textContent = "Vol";
+
+    const volumeSlider = document.createElement("input");
+    volumeSlider.type = "range";
+    volumeSlider.min = 0;
+    volumeSlider.max = 100;
+    volumeSlider.value = 100;
+    volumeSlider.dataset.track = index;
+    volumeSlider.addEventListener("input", (e) => setTrackVolume(index, e.target.value));
+
+    volumeDiv.appendChild(volumeLabel);
+    volumeDiv.appendChild(volumeSlider);
+    trackControl.appendChild(volumeDiv);
+
+    trackControlsPanel.appendChild(trackControl);
+  });
+}
+
+// --- GET TRACK COLOR ---
+function getTrackColor(track) {
+  const sound = (track.sound || "").toLowerCase();
+  if (sound.includes("kick") || sound.includes("snare") || sound.includes("hat") || sound.includes("clap")) {
+    return "#ff4466"; // Drums = red
+  } else if (sound.includes("bass")) {
+    return "#4488ff"; // Bass = blue
+  } else if (sound.includes("chord")) {
+    return "#aa44ff"; // Chords = purple
+  }
+  return "#00ffee"; // Default = cyan
+}
+
+// --- TRACK CONTROL FUNCTIONS ---
+function toggleMute(trackIndex, button) {
+  trackStates[trackIndex].muted = !trackStates[trackIndex].muted;
+  button.classList.toggle("active");
+
+  // If soloing, clear solo when muting
+  if (trackStates[trackIndex].muted && trackStates[trackIndex].solo) {
+    trackStates[trackIndex].solo = false;
+    const soloBtn = button.parentElement.querySelector('[title="Solo"]');
+    if (soloBtn) soloBtn.classList.remove("active");
+  }
+}
+
+function toggleSolo(trackIndex, button) {
+  trackStates[trackIndex].solo = !trackStates[trackIndex].solo;
+  button.classList.toggle("active");
+
+  // If soloing, unmute
+  if (trackStates[trackIndex].solo && trackStates[trackIndex].muted) {
+    trackStates[trackIndex].muted = false;
+    const muteBtn = button.parentElement.querySelector('[title="Mute"]');
+    if (muteBtn) muteBtn.classList.remove("active");
+  }
+}
+
+function setTrackVolume(trackIndex, volume) {
+  trackStates[trackIndex].volume = parseInt(volume);
+}
+
+function isTrackAudible(trackIndex) {
+  // Check if any track is soloed
+  const anySolo = trackStates.some(state => state.solo);
+
+  if (anySolo) {
+    // If soloing, only solo tracks are audible
+    return trackStates[trackIndex].solo;
+  } else {
+    // Otherwise, all non-muted tracks are audible
+    return !trackStates[trackIndex].muted;
+  }
+}
+
 // --- DRAW SVG GRID ---
 function drawGrid() {
   svgGrid.innerHTML = "";
-  const width = svgGrid.clientWidth;
-  const height = svgGrid.clientHeight;
-  const rowHeight = height / sequencerData.length;
-  const colWidth = width / stepCount;
 
+  // Set viewBox to fixed dimensions for consistent rendering
+  const svgWidth = 800;
+  const svgHeight = 400;
+  svgGrid.setAttribute("viewBox", `0 0 ${svgWidth} ${svgHeight}`);
+
+  if (sequencerData.length === 0) return;
+
+  const rowHeight = svgHeight / sequencerData.length;
+  const colWidth = svgWidth / stepCount;
+
+  // Draw beat division lines
+  for (let i = 0; i <= stepCount; i += 4) {
+    const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    line.setAttribute("x1", i * colWidth);
+    line.setAttribute("y1", 0);
+    line.setAttribute("x2", i * colWidth);
+    line.setAttribute("y2", svgHeight);
+    line.classList.add("beat-line");
+    svgGrid.appendChild(line);
+  }
+
+  // Draw grid steps
   sequencerData.forEach((track, rowIndex) => {
     for (let step = 0; step < stepCount; step++) {
       const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-      rect.setAttribute("x", step * colWidth);
-      rect.setAttribute("y", rowIndex * rowHeight);
+      rect.setAttribute("x", step * colWidth + 1);
+      rect.setAttribute("y", rowIndex * rowHeight + 1);
       rect.setAttribute("width", colWidth - 2);
       rect.setAttribute("height", rowHeight - 2);
-      rect.setAttribute("rx", 6);
-      rect.setAttribute("ry", 6);
+      rect.setAttribute("rx", 4);
+      rect.setAttribute("ry", 4);
       rect.classList.add("step");
       rect.dataset.row = rowIndex;
       rect.dataset.step = step;
 
+      // Add track type class for coloring
+      const sound = (track.sound || "").toLowerCase();
+      if (sound.includes("kick") || sound.includes("snare") || sound.includes("hat") || sound.includes("clap")) {
+        rect.classList.add("track-drum");
+      } else if (sound.includes("bass")) {
+        rect.classList.add("track-bass");
+      } else if (sound.includes("chord")) {
+        rect.classList.add("track-chord");
+      }
+
+      // Check if step is active
+      if (track.steps[step] && track.steps[step].active) {
+        rect.classList.add("active");
+
+        // Add velocity class (if velocity data exists)
+        const velocity = track.steps[step].velocity || 1;
+        if (velocity < 0.6) {
+          rect.classList.add("velocity-low");
+        } else if (velocity > 0.8) {
+          rect.classList.add("velocity-high");
+        }
+      }
+
+      // Event listeners
       rect.addEventListener("click", toggleStep);
+      rect.addEventListener("mouseenter", showStepInfo);
+
       svgGrid.appendChild(rect);
     }
   });
+
+  // Create playhead
+  playheadElement = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+  playheadElement.setAttribute("x", 0);
+  playheadElement.setAttribute("y", 0);
+  playheadElement.setAttribute("width", colWidth);
+  playheadElement.setAttribute("height", svgHeight);
+  playheadElement.classList.add("playhead");
+  svgGrid.appendChild(playheadElement);
+}
+
+// --- SHOW STEP INFO ON HOVER ---
+function showStepInfo(event) {
+  const rect = event.target;
+  const row = parseInt(rect.dataset.row);
+  const step = parseInt(rect.dataset.step);
+
+  if (sequencerData[row] && sequencerData[row].steps[step]) {
+    const stepData = sequencerData[row].steps[step];
+    const trackName = sequencerData[row].sound;
+    const velocity = (stepData.velocity || 1) * 100;
+
+    rect.setAttribute("title", `${trackName} - Step ${step + 1} - Velocity: ${velocity.toFixed(0)}%`);
+  }
 }
 
 // --- TOGGLE STEP (USER EDITING) ---
@@ -223,22 +453,26 @@ function stopSequencer() {
 }
 
 function playStep(step) {
-  sequencerData.forEach(track => {
+  sequencerData.forEach((track, trackIndex) => {
+    // Check if track should be audible
+    if (!isTrackAudible(trackIndex)) return;
+
     const note = track.steps[step];
-    if (note.active) {
-      triggerSound(track.sound, track.midiNote);
+    if (note && note.active) {
+      const volume = trackStates[trackIndex].volume / 100;
+      triggerSound(track.sound, track.midiNote, volume);
     }
   });
 }
 
-function triggerSound(sound, midiNote) {
+function triggerSound(sound, midiNote, volume = 1.0) {
   // Simplified oscillator-based drum/synth
   const osc = audioCtx.createOscillator();
   const gain = audioCtx.createGain();
 
   osc.type = "sine";
   osc.frequency.value = midiNoteToFreq(midiNote);
-  gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+  gain.gain.setValueAtTime(0.2 * volume, audioCtx.currentTime);
   gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.4);
 
   osc.connect(gain).connect(audioCtx.destination);
@@ -255,19 +489,70 @@ function highlightStep(step) {
   resetHighlights();
   const rects = svgGrid.querySelectorAll(`[data-step="${step}"]`);
   rects.forEach(r => r.classList.add("highlight"));
+
+  // Update playhead position
+  if (playheadElement) {
+    const svgWidth = 800;
+    const colWidth = svgWidth / stepCount;
+    playheadElement.setAttribute("x", step * colWidth);
+  }
+
+  // Update status bar position
+  updatePosition(step);
 }
 
 function resetHighlights() {
   svgGrid.querySelectorAll(".highlight").forEach(r => r.classList.remove("highlight"));
 }
 
+// --- UPDATE STATUS BAR ---
+function updateStatusBar() {
+  const trackCount = document.getElementById("trackCount");
+  const bpmDisplay = document.getElementById("bpmDisplay");
+  const playStatus = document.getElementById("playStatus");
+
+  if (trackCount) trackCount.textContent = sequencerData.length;
+  if (bpmDisplay) bpmDisplay.textContent = bpm;
+  if (playStatus) {
+    playStatus.textContent = isPlaying ? "Playing" : "Stopped";
+    playStatus.classList.toggle("playing", isPlaying);
+  }
+}
+
+function updatePosition(step) {
+  const position = document.getElementById("position");
+  if (!position) return;
+
+  const bar = Math.floor(step / 16) + 1;
+  const beat = Math.floor((step % 16) / 4) + 1;
+  const sixteenth = (step % 4) + 1;
+
+  position.textContent = `${bar}.${beat}.${sixteenth}`;
+}
+
 // --- CONTROLS ---
 function setupControls() {
-  document.getElementById("playBtn").addEventListener("click", startSequencer);
-  document.getElementById("stopBtn").addEventListener("click", stopSequencer);
+  document.getElementById("playBtn").addEventListener("click", () => {
+    startSequencer();
+    updateStatusBar();
+  });
+
+  document.getElementById("stopBtn").addEventListener("click", () => {
+    stopSequencer();
+    updateStatusBar();
+  });
+
   document.getElementById("exportBtn").addEventListener("click", exportPattern);
+
   document.getElementById("bpm").addEventListener("change", e => {
     bpm = parseInt(e.target.value);
+    updateStatusBar();
+
+    // Restart if playing
+    if (isPlaying) {
+      stopSequencer();
+      setTimeout(() => startSequencer(), 100);
+    }
   });
 }
 
@@ -313,8 +598,15 @@ function setupAdvancedControls() {
         // Load into audio engine
         audioEngine.loadTracks(allTracks);
 
+        // Also update the simple sequencer display (optional - shows first drum track)
+        // For now, keep the original drum pattern in the grid
+        // You could optionally show loaded tracks here
+
+        // Update status bar
+        updateStatusBar();
+
         console.log("Loaded tracks:", allTracks.map(t => t.title));
-        alert(`Loaded ${allTracks.length} tracks:\n${allTracks.map(t => t.title).join('\n')}`);
+        alert(`Loaded ${allTracks.length} tracks!\n${allTracks.map(t => t.title).join('\n')}`);
       } catch (e) {
         console.error("Error loading data:", e);
         alert("Error loading data: " + e.message);
