@@ -30,12 +30,79 @@ document.addEventListener("DOMContentLoaded", async () => {
 // --- LOAD JSON INSTRUMENTS ---
 async function loadInstruments() {
   try {
-    const response = await fetch("instruments/drumkit.json");
+    const response = await fetch("instruments/drums.json");
     const data = await response.json();
-    sequencerData = data.tracks || [];
+    sequencerData = parseDrumsJSON(data);
   } catch (e) {
     console.error("Error loading instruments:", e);
   }
+}
+
+// --- PARSE DRUMS.JSON FORMAT ---
+function parseDrumsJSON(data) {
+  const tracks = [];
+  const soundPalette = data.soundPalette || [];
+
+  // Get the first groove's first bar as our starting pattern
+  if (!data.grooves || data.grooves.length === 0) return tracks;
+
+  const firstGroove = data.grooves[0];
+  const allNotations = {};
+
+  // Collect all notation from all bars in the first groove
+  firstGroove.bars.forEach(bar => {
+    Object.entries(bar.notation).forEach(([instrument, notation]) => {
+      if (!allNotations[instrument]) {
+        allNotations[instrument] = notation;
+      }
+    });
+  });
+
+  // Convert each instrument's notation to track format
+  Object.entries(allNotations).forEach(([instrumentName, notation]) => {
+    const steps = parseNotation(notation);
+    const midiNote = getMidiNoteForInstrument(instrumentName);
+
+    tracks.push({
+      id: instrumentName.toLowerCase().replace(/\s+/g, '_'),
+      sound: instrumentName,
+      midiNote: midiNote,
+      steps: steps
+    });
+  });
+
+  return tracks;
+}
+
+// --- PARSE NOTATION STRING (X = active, - = inactive) ---
+function parseNotation(notation) {
+  const steps = [];
+  const chars = notation.replace(/\s+/g, '').split('');
+
+  for (let i = 0; i < stepCount; i++) {
+    const char = chars[i] || '-';
+    steps.push({
+      active: char.toUpperCase() === 'X'
+    });
+  }
+
+  return steps;
+}
+
+// --- MAP INSTRUMENT NAMES TO MIDI NOTES ---
+function getMidiNoteForInstrument(name) {
+  const midiMap = {
+    'Kick': 36,
+    'Kick2': 35,
+    'Sub Kick': 34,
+    'Snare': 38,
+    'Clap': 39,
+    'Open Hat': 46,
+    'Closed Hat': 42,
+    'Tom': 45,
+    'Wood': 37
+  };
+  return midiMap[name] || 40;
 }
 
 // --- DRAW SVG GRID ---
