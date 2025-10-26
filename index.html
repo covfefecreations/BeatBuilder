@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>SVG Beat Sequencer</title>
   <link rel="stylesheet" href="style.css" />
+  <!-- Advanced Audio Libraries -->
+  <script src="https://cdn.jsdelivr.net/npm/tone@14.8.49/build/Tone.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/midi-writer-js@2.1.4/build/index.min.js"></script>
 </head>
 <body>
   <header>
@@ -14,7 +17,22 @@
       <button id="stopBtn">■ Stop</button>
       <label for="bpm">BPM</label>
       <input id="bpm" type="number" min="60" max="200" value="120" />
-      <button id="exportBtn">Export Pattern</button>
+      <button id="exportBtn">Export JSON</button>
+    </div>
+
+    <!-- Advanced Controls -->
+    <div class="controls advanced-controls">
+      <button id="loadDataBtn">Load All Data</button>
+      <button id="recordMidiBtn">● Record MIDI</button>
+      <button id="stopRecordBtn">■ Stop Recording</button>
+      <label for="quantize">Quantize</label>
+      <select id="quantize">
+        <option value="4n">Quarter Note</option>
+        <option value="8n">8th Note</option>
+        <option value="16n" selected>16th Note</option>
+        <option value="32n">32nd Note</option>
+      </select>
+      <button id="exportMidiBtn">Export MIDI</button>
     </div>
   </header>
 
@@ -23,9 +41,9 @@
   </main>
 
   <footer>
-    <p>🎧 Built with Web Audio + SVG | JSON Modular System Ready</p>
+    <p>🎧 Built with Tone.js + Web Audio + SVG | JSON Modular System Active</p>
   </footer>
 
-  <script src="main.js"></script>
+  <script type="module" src="main.js"></script>
 </body>
 </html>

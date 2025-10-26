@@ -31,9 +31,16 @@ h1 {
   justify-content: center;
   gap: 0.75rem;
   flex-wrap: wrap;
+  margin-bottom: 0.5rem;
 }
 
-button, input[type="number"] {
+.advanced-controls {
+  border-top: 1px solid #333;
+  padding-top: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+button, input[type="number"], select {
   background: #1e1e1e;
   color: #00ffee;
   border: 1px solid #00ffee;
@@ -44,10 +51,20 @@ button, input[type="number"] {
   transition: all 0.2s ease;
 }
 
-button:hover, input[type="number"]:focus {
+button:hover, input[type="number"]:focus, select:focus {
   background: #00ffee;
   color: #000;
   outline: none;
+}
+
+#recordMidiBtn {
+  color: #ff0055;
+  border-color: #ff0055;
+}
+
+#recordMidiBtn:hover {
+  background: #ff0055;
+  color: #fff;
 }
 
 main {

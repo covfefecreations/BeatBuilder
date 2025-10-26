@@ -1,6 +1,15 @@
 // === main.js ===
-// SVG-BASED SEQUENCER CORE
+// SVG-BASED SEQUENCER CORE with Advanced Features Integration
 // Handles visual grid rendering, audio routing, and interaction logic.
+
+// Import advanced modules
+import AudioEngine from "./src/audioengine.js";
+import MidiManager from "./src/midimanager.js";
+import ExportManager from "./src/exportmanager.js";
+import DataManager from "./src/datamanager.js";
+import DrumAdapter from "./src/drumadapter.js";
+import BassAdapter from "./src/bassadapter.js";
+import ChordAdapter from "./src/chordadapter.js";
 
 // --- GLOBALS ---
 let audioCtx;
@@ -12,7 +21,15 @@ let svgGrid;
 let stepInterval;
 let stepCount = 16;
 
-// For MIDI
+// Advanced features
+let audioEngine = null;
+let midiManager = null;
+let exportManager = null;
+let dataManager = null;
+let allTracks = [];
+let useAdvancedEngine = false;
+
+// For simple MIDI
 let midiAccess = null;
 let activeNotes = new Set();
 
@@ -21,11 +38,38 @@ document.addEventListener("DOMContentLoaded", async () => {
   svgGrid = document.getElementById("sequencer");
   audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
+  // Initialize advanced features if Tone.js is available
+  if (typeof Tone !== 'undefined') {
+    console.log("Tone.js detected - initializing advanced features");
+    await initAdvancedFeatures();
+    useAdvancedEngine = true;
+  }
+
   await loadInstruments();
   drawGrid();
   setupControls();
-  setupMIDI();
+  setupAdvancedControls();
+
+  if (!useAdvancedEngine) {
+    setupMIDI(); // Fallback to simple MIDI
+  }
 });
+
+// --- INITIALIZE ADVANCED FEATURES ---
+async function initAdvancedFeatures() {
+  audioEngine = new AudioEngine();
+  exportManager = new ExportManager();
+  dataManager = new DataManager();
+
+  // Initialize audio engine (no samples for now, just synths)
+  await audioEngine.init({});
+
+  // Initialize MIDI manager
+  midiManager = new MidiManager(audioEngine);
+  await midiManager.init();
+
+  console.log("Advanced features initialized");
+}
 
 // --- LOAD JSON INSTRUMENTS ---
 async function loadInstruments() {
@@ -143,23 +187,39 @@ function toggleStep(event) {
 }
 
 // --- PLAYBACK LOOP ---
-function startSequencer() {
+async function startSequencer() {
   if (isPlaying) return;
   isPlaying = true;
-  currentStep = 0;
-  const stepTime = (60 / bpm) / 4; // Sixteenth note timing
 
-  stepInterval = setInterval(() => {
-    playStep(currentStep);
-    highlightStep(currentStep);
-    currentStep = (currentStep + 1) % stepCount;
-  }, stepTime * 1000);
+  if (useAdvancedEngine && audioEngine) {
+    // Use Tone.js engine for playback
+    await audioEngine.start(bpm);
+    currentStep = 0;
+    const stepTime = (60 / bpm) / 4; // Sixteenth note timing
+    stepInterval = setInterval(() => {
+      highlightStep(currentStep);
+      currentStep = (currentStep + 1) % stepCount;
+    }, stepTime * 1000);
+  } else {
+    // Use simple oscillator-based playback
+    currentStep = 0;
+    const stepTime = (60 / bpm) / 4; // Sixteenth note timing
+    stepInterval = setInterval(() => {
+      playStep(currentStep);
+      highlightStep(currentStep);
+      currentStep = (currentStep + 1) % stepCount;
+    }, stepTime * 1000);
+  }
 }
 
 function stopSequencer() {
   isPlaying = false;
   clearInterval(stepInterval);
   resetHighlights();
+
+  if (useAdvancedEngine && audioEngine) {
+    audioEngine.stop();
+  }
 }
 
 function playStep(step) {
@@ -211,13 +271,127 @@ function setupControls() {
   });
 }
 
+// --- ADVANCED CONTROLS ---
+function setupAdvancedControls() {
+  const loadDataBtn = document.getElementById("loadDataBtn");
+  const recordMidiBtn = document.getElementById("recordMidiBtn");
+  const stopRecordBtn = document.getElementById("stopRecordBtn");
+  const exportMidiBtn = document.getElementById("exportMidiBtn");
+  const quantizeSelect = document.getElementById("quantize");
+
+  if (!useAdvancedEngine || !audioEngine) {
+    // Disable advanced buttons if engine not available
+    if (loadDataBtn) loadDataBtn.disabled = true;
+    if (recordMidiBtn) recordMidiBtn.disabled = true;
+    if (stopRecordBtn) stopRecordBtn.disabled = true;
+    if (exportMidiBtn) exportMidiBtn.disabled = true;
+    return;
+  }
+
+  // Load all JSON data and create multi-track sequence
+  if (loadDataBtn) {
+    loadDataBtn.addEventListener("click", async () => {
+      try {
+        const [drumData, bassData, chordData] = await Promise.all([
+          dataManager.loadData("drums"),
+          dataManager.loadData("bass"),
+          dataManager.loadData("chords")
+        ]);
+
+        // Use adapters to convert to track format
+        const drumTracks = DrumAdapter.loadFromJSON(drumData, bpm);
+        const bassTracks = BassAdapter.loadFromJSON(bassData, bpm);
+        const chordTracks = ChordAdapter.loadFromJSON(chordData, bpm);
+
+        // Take first of each type for now
+        allTracks = [
+          ...drumTracks,
+          bassTracks[0], // "The Foundation"
+          chordTracks[0]  // "The Pop Standard"
+        ].filter(Boolean);
+
+        // Load into audio engine
+        audioEngine.loadTracks(allTracks);
+
+        console.log("Loaded tracks:", allTracks.map(t => t.title));
+        alert(`Loaded ${allTracks.length} tracks:\n${allTracks.map(t => t.title).join('\n')}`);
+      } catch (e) {
+        console.error("Error loading data:", e);
+        alert("Error loading data: " + e.message);
+      }
+    });
+  }
+
+  // MIDI Recording
+  if (recordMidiBtn) {
+    recordMidiBtn.addEventListener("click", () => {
+      if (audioEngine) {
+        audioEngine.startRecording();
+        recordMidiBtn.style.background = "#ff0055";
+        console.log("MIDI recording started");
+      }
+    });
+  }
+
+  if (stopRecordBtn) {
+    stopRecordBtn.addEventListener("click", () => {
+      if (audioEngine) {
+        const quantize = quantizeSelect.value;
+        const pattern = audioEngine.stopRecordingAndQuantize({ quantize, bpm });
+        if (recordMidiBtn) recordMidiBtn.style.background = "";
+
+        // Create a new track for the recording
+        const newTrack = {
+          id: "midi_recording_" + Date.now(),
+          title: "MIDI Recording",
+          pattern,
+          bpm,
+          meta: { type: "midi" }
+        };
+        allTracks.push(newTrack);
+        audioEngine.loadTracks(allTracks);
+
+        console.log("Recording stopped, quantized pattern:", pattern);
+        alert(`Recorded ${pattern.length} notes`);
+      }
+    });
+  }
+
+  // Export MIDI
+  if (exportMidiBtn) {
+    exportMidiBtn.addEventListener("click", () => {
+      if (exportManager && allTracks.length > 0) {
+        exportManager.exportMIDI(allTracks, bpm, "beatbuilder_export.mid");
+      } else {
+        alert("No tracks to export. Load data first!");
+      }
+    });
+  }
+
+  // Quantize setting
+  if (quantizeSelect) {
+    quantizeSelect.addEventListener("change", (e) => {
+      if (audioEngine) {
+        audioEngine.setQuantize(e.target.value);
+      }
+    });
+  }
+}
+
 // --- EXPORT PATTERN ---
 function exportPattern() {
-  const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(sequencerData, null, 2));
-  const dlAnchor = document.createElement("a");
-  dlAnchor.setAttribute("href", dataStr);
-  dlAnchor.setAttribute("download", "pattern.json");
-  dlAnchor.click();
+  if (useAdvancedEngine && exportManager && audioEngine) {
+    // Export full session from audio engine
+    const session = audioEngine.exportSession();
+    exportManager.exportJSON(session, "beatbuilder_session.json");
+  } else {
+    // Export simple sequencer data
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(sequencerData, null, 2));
+    const dlAnchor = document.createElement("a");
+    dlAnchor.setAttribute("href", dataStr);
+    dlAnchor.setAttribute("download", "pattern.json");
+    dlAnchor.click();
+  }
 }
 
 // --- MIDI INPUT SETUP ---
