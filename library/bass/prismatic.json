@@ -1,0 +1,30 @@
+{
+  "id": "bass_prismatic",
+  "name": "Prismatic",
+  "description": "Urgent, clean progression in A major",
+  "progression": "A - F#m - D - E",
+  "key": "A Major",
+  "energy": "High",
+  "rhythm": "Quarter Notes",
+  "notation": "A A A A | F# F# F# F# | D D D D | E E E E",
+  "notes": ["A", "F#", "D", "E"],
+  "pattern": [
+    {"time": 0, "note": "A2", "duration": 1, "velocity": 0.85},
+    {"time": 1, "note": "A2", "duration": 1, "velocity": 0.8},
+    {"time": 2, "note": "A2", "duration": 1, "velocity": 0.85},
+    {"time": 3, "note": "A2", "duration": 1, "velocity": 0.8},
+    {"time": 4, "note": "F#2", "duration": 1, "velocity": 0.85},
+    {"time": 5, "note": "F#2", "duration": 1, "velocity": 0.8},
+    {"time": 6, "note": "F#2", "duration": 1, "velocity": 0.85},
+    {"time": 7, "note": "F#2", "duration": 1, "velocity": 0.8},
+    {"time": 8, "note": "D2", "duration": 1, "velocity": 0.85},
+    {"time": 9, "note": "D2", "duration": 1, "velocity": 0.8},
+    {"time": 10, "note": "D2", "duration": 1, "velocity": 0.85},
+    {"time": 11, "note": "D2", "duration": 1, "velocity": 0.8},
+    {"time": 12, "note": "E2", "duration": 1, "velocity": 0.85},
+    {"time": 13, "note": "E2", "duration": 1, "velocity": 0.8},
+    {"time": 14, "note": "E2", "duration": 1, "velocity": 0.85},
+    {"time": 15, "note": "E2", "duration": 1, "velocity": 0.8}
+  ],
+  "tips": ["Clean, urgent energy", "Bright major tonality", "Perfect for pop/rock anthems"]
+}

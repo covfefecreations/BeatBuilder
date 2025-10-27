@@ -1,0 +1,21 @@
+{
+  "id": "drum_trap_stutter",
+  "name": "Trap Stutter",
+  "description": "Stuttering kick pattern with trap-style syncopation",
+  "genre": "Trap/Hip-Hop",
+  "energy": "High",
+  "bpm": 165,
+  "bars": 2,
+  "instruments": ["Kick", "Sub Kick"],
+  "notation": {
+    "bar1": {
+      "Kick": "X - - X - X - - X - - - X - - X",
+      "Sub Kick": "X - - - - - - - X - - - X - - -"
+    },
+    "bar2": {
+      "Kick": "- - X - - X - - X - - - X - X -",
+      "Sub Kick": "- - X - - - - - X - - - - - - -"
+    }
+  },
+  "tips": ["Stuttering kicks create urgency", "Sub kick reinforces main hits", "Leave space for 808 bass slides"]
+}

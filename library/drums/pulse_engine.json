@@ -1,0 +1,21 @@
+{
+  "id": "drum_pulse_engine",
+  "name": "Pulse Engine",
+  "description": "Relentless, hypnotic pattern with rapid pulse and driving energy",
+  "genre": "Techno/Industrial",
+  "energy": "Very High",
+  "bpm": 176,
+  "bars": 2,
+  "instruments": ["Kick", "Sub Kick"],
+  "notation": {
+    "bar1": {
+      "Kick": "X - X - - X - X - X - - X - X -",
+      "Sub Kick": "X - - - - X - - - X - - - - X -"
+    },
+    "bar2": {
+      "Kick": "X - - X - X - X - - X - X - - -",
+      "Sub Kick": "X - - - - X - X - - - - X - - -"
+    }
+  },
+  "tips": ["Relentless forward motion", "Sub kick adds weight to key hits", "Perfect for peak-time techno"]
+}

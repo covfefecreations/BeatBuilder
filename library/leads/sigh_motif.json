@@ -1,0 +1,18 @@
+{
+  "id": "lead_sigh_motif",
+  "name": "Sigh Motif",
+  "description": "Melancholic, soft descending lead in A minor",
+  "key": "A Minor",
+  "scale": "A - B - C - D - E - F - G",
+  "motif": "1-7-5-3-1",
+  "mood": "Melancholic, Soft",
+  "energy": "Low",
+  "pattern": [
+    {"time": 0, "note": "A4", "duration": 1, "velocity": 0.75},
+    {"time": 1, "note": "G4", "duration": 1, "velocity": 0.7},
+    {"time": 2, "note": "E4", "duration": 1, "velocity": 0.7},
+    {"time": 3, "note": "C4", "duration": 1, "velocity": 0.65},
+    {"time": 4, "note": "A3", "duration": 2, "velocity": 0.6}
+  ],
+  "tips": ["Descending motion creates sadness", "Sustain final note for emotional impact", "Perfect for introspective moments"]
+}

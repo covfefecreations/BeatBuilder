@@ -1,0 +1,18 @@
+{
+  "id": "lead_halo",
+  "name": "Halo",
+  "description": "Dreamy, upward-reaching lead in C Lydian",
+  "key": "C Lydian",
+  "scale": "C - D - E - F# - G - A - B",
+  "motif": "1-2-3-5-4",
+  "mood": "Dreamy, Upward",
+  "energy": "Medium",
+  "pattern": [
+    {"time": 0, "note": "C4", "duration": 0.5, "velocity": 0.7},
+    {"time": 0.5, "note": "D4", "duration": 0.5, "velocity": 0.75},
+    {"time": 1, "note": "E4", "duration": 0.5, "velocity": 0.8},
+    {"time": 1.5, "note": "G4", "duration": 0.75, "velocity": 0.85},
+    {"time": 2.25, "note": "F#4", "duration": 1, "velocity": 0.75}
+  ],
+  "tips": ["Lydian mode sounds ethereal and bright", "Raised 4th (F#) creates magic", "Perfect for celestial, floating textures"]
+}

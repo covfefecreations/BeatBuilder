@@ -1,0 +1,17 @@
+{
+  "id": "lead_bolt",
+  "name": "Bolt",
+  "description": "Aggressive, sharp lead motif in B Phrygian",
+  "key": "B Phrygian",
+  "scale": "B - C - D - E - F# - G - A",
+  "motif": "1-♭2-3-1",
+  "mood": "Aggressive, Sharp",
+  "energy": "High",
+  "pattern": [
+    {"time": 0, "note": "B4", "duration": 0.25, "velocity": 0.95},
+    {"time": 0.25, "note": "C5", "duration": 0.25, "velocity": 0.9},
+    {"time": 0.5, "note": "D5", "duration": 0.5, "velocity": 0.9},
+    {"time": 1, "note": "B4", "duration": 0.5, "velocity": 0.85}
+  ],
+  "tips": ["Phrygian mode adds exotic darkness", "Short, sharp notes create aggression", "Great for intense, dramatic sections"]
+}

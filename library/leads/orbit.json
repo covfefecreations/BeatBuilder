@@ -1,0 +1,17 @@
+{
+  "id": "lead_orbit",
+  "name": "Orbit",
+  "description": "Mysterious, expansive lead in C minor",
+  "key": "C Minor",
+  "scale": "C - D - Eb - F - G - Ab - Bb",
+  "motif": "1-2-♭3-5",
+  "mood": "Mysterious, Expansive",
+  "energy": "Medium",
+  "pattern": [
+    {"time": 0, "note": "C4", "duration": 0.75, "velocity": 0.75},
+    {"time": 0.75, "note": "D4", "duration": 0.75, "velocity": 0.8},
+    {"time": 1.5, "note": "D#4", "duration": 0.75, "velocity": 0.85},
+    {"time": 2.25, "note": "G4", "duration": 1.5, "velocity": 0.8}
+  ],
+  "tips": ["Gradual ascent creates tension", "Minor 3rd adds darkness", "Perfect for sci-fi/space themes"]
+}

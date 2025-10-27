@@ -1,0 +1,30 @@
+{
+  "id": "bass_sunny_motion",
+  "name": "Sunny Motion",
+  "description": "Bright, open progression in G major",
+  "progression": "G - Em - C - D",
+  "key": "G Major",
+  "energy": "Medium",
+  "rhythm": "Quarter Notes",
+  "notation": "G G G G | E E E E | C C C C | D D D D",
+  "notes": ["G", "E", "C", "D"],
+  "pattern": [
+    {"time": 0, "note": "G2", "duration": 1, "velocity": 0.8},
+    {"time": 1, "note": "G2", "duration": 1, "velocity": 0.75},
+    {"time": 2, "note": "G2", "duration": 1, "velocity": 0.8},
+    {"time": 3, "note": "G2", "duration": 1, "velocity": 0.75},
+    {"time": 4, "note": "E2", "duration": 1, "velocity": 0.8},
+    {"time": 5, "note": "E2", "duration": 1, "velocity": 0.75},
+    {"time": 6, "note": "E2", "duration": 1, "velocity": 0.8},
+    {"time": 7, "note": "E2", "duration": 1, "velocity": 0.75},
+    {"time": 8, "note": "C3", "duration": 1, "velocity": 0.8},
+    {"time": 9, "note": "C3", "duration": 1, "velocity": 0.75},
+    {"time": 10, "note": "C3", "duration": 1, "velocity": 0.8},
+    {"time": 11, "note": "C3", "duration": 1, "velocity": 0.75},
+    {"time": 12, "note": "D2", "duration": 1, "velocity": 0.8},
+    {"time": 13, "note": "D2", "duration": 1, "velocity": 0.75},
+    {"time": 14, "note": "D2", "duration": 1, "velocity": 0.8},
+    {"time": 15, "note": "D2", "duration": 1, "velocity": 0.75}
+  ],
+  "tips": ["Uplifting and positive", "Open major sound", "Great for feel-good tracks"]
+}

@@ -4,13 +4,29 @@ A comprehensive resource library of drum patterns, basslines, and chord progress
 
 ## 📚 What's Included
 
-### Drum Patterns (4 patterns)
+### Drum Patterns (14 patterns)
+
+**Original Patterns:**
 - **Intro Build** - Building drum pattern from minimal to full kit (Universal, Low-Medium energy)
 - **Chorus Syncopated** - Syncopated kick pattern with tight hi-hats (Hip-Hop/Pop, Medium-High energy)
 - **Verse Steady** - Steady groove with hat variations (Hip-Hop/R&B, Medium energy)
 - **Outro Minimal** - Minimal ending pattern (Universal, Low energy)
 
-### Bass Patterns (8 patterns)
+**Extended Collection:**
+- **Rising Steam** - Four-on-the-floor cinematic pattern (Cinematic/Electronic, 172 BPM)
+- **Trap Stutter** - Stuttering trap-style syncopation (Trap/Hip-Hop, 165 BPM)
+- **Solar Pulse** - Propulsive house pattern with off-beat kicks (House/Electronic, 168 BPM)
+- **Broken Clock** - Off-kilter experimental pattern (Experimental/IDM, 170 BPM)
+- **Neon Rush** - High-energy rapid fire kicks (DnB/Breakbeat, 174 BPM)
+- **Underflow** - Minimal deep techno space (Minimal/Techno, 162 BPM)
+- **Metro Snap** - Tight metronomic techno drive (Tech House/Techno, 170 BPM)
+- **Glass Hat** - Shimmery hi-hat only pattern (Ambient/Downtempo, 168 BPM)
+- **Pulse Engine** - Relentless hypnotic techno (Techno/Industrial, 176 BPM)
+- **Lazy Groove** - Laid-back lo-fi spacing (Lo-Fi/Chill, 160 BPM)
+
+### Bass Patterns (18 patterns)
+
+**Original Patterns:**
 - **The Foundation** - Minimal whole note bass (Minimal energy)
 - **The Heartbeat** - Steady quarter note pulse (Low-Medium energy)
 - **The Bounce** - Root-fifth bounce pattern (Medium energy)
@@ -20,12 +36,36 @@ A comprehensive resource library of drum patterns, basslines, and chord progress
 - **The Reggae One-Drop** - Classic reggae offbeat bass (Medium energy)
 - **The Anticipation** - Bass anticipates chord changes (Medium-High energy)
 
+**Extended Collection:**
+- **Warm Circuit** (C-Am-F-G) - Hopeful, nostalgic progression in C Major
+- **Iron Root** (Am-F-C-G) - Dark, resolute progression in A Minor
+- **Glass Pulse** (Em-C-G-D) - Airy, driving progression in E Minor
+- **Low Beacon** (Dm-Bb-F-C) - Brooding, wide progression in D Minor
+- **Sunny Motion** (G-Em-C-D) - Bright, open progression in G Major
+- **Syncopated Anchor** (Fm-Db-Ab-Eb) - Funky, punchy syncopated in F Minor
+- **Submarine** (Cm-Ab-Eb-Bb) - Deep, distant progression in C Minor
+- **Walking Groove** (Bb-Gm-Eb-F) - Groovy, warm walking bass in Bb Major
+- **Prismatic** (A-F#m-D-E) - Urgent, clean progression in A Major
+- **Hollow Root** (Ebm-Bbm-Ab-Gb) - Mournful, lush whole notes in Eb Minor
+
 ### Chord Progressions (5 progressions)
 - **The Pop Standard** (C-G-Am-F) - Hopeful, anthemic, bittersweet optimism
 - **The Minor Climb** (Am-G-F-G) - Urgent, determined, intense
 - **The Jazzy Resolve** (Fmaj7-G7-Em7-Am) - Introspective, sophisticated, dreamy
 - **The Tension Builder** (Am-F-C-G) - Melancholic → hopeful → triumphant
 - **The Emotional Roller Coaster** (C-Em-Am-F) - Sweet sadness, wistful, nostalgic
+
+### Lead Motifs (10 patterns) **NEW!**
+- **Neon Veins** - Heroic pentatonic ascent (E Minor Pentatonic, Bright/Heroic)
+- **Sigh Motif** - Melancholic descending phrase (A Minor, Soft/Sad)
+- **Bolt** - Aggressive Phrygian stab (B Phrygian, Sharp/Intense)
+- **Halo** - Dreamy Lydian rise (C Lydian, Ethereal/Uplifting)
+- **Glass Lead** - Clear anthemic arc (D Major, Triumphant/Clean)
+- **Wisp** - Ethereal sparse pentatonic (F Minor Pentatonic, Ghostly/Ambient)
+- **Driver** - Punchy hooky phrase (G Minor, Catchy/Energetic)
+- **Orbit** - Mysterious expansive motif (C Minor, Dark/Spacious)
+- **Shard** - Iridescent tense climb (E Major, Dramatic/Tense)
+- **Quiet Cry** - Longing soft descent (Bb Minor, Emotional/Intimate)
 
 ## 🚀 Quick Start
 
@@ -79,12 +119,22 @@ const jazzPatterns = library.getPatternsByGenre('jazz');
 
 ```
 /library
-  /drums
+  /drums (14 patterns)
     - intro_build.json
     - chorus_syncopated.json
     - verse_steady.json
     - outro_minimal.json
-  /bass
+    - rising_steam.json
+    - trap_stutter.json
+    - solar_pulse.json
+    - broken_clock.json
+    - neon_rush.json
+    - underflow.json
+    - metro_snap.json
+    - glass_hat.json
+    - pulse_engine.json
+    - lazy_groove.json
+  /bass (18 patterns)
     - foundation.json
     - heartbeat.json
     - bounce.json
@@ -93,14 +143,33 @@ const jazzPatterns = library.getPatternsByGenre('jazz');
     - disco_drive.json
     - reggae_one_drop.json
     - anticipation.json
-  /chords
+    - warm_circuit.json
+    - iron_root.json
+    - glass_pulse.json
+    - low_beacon.json
+    - sunny_motion.json
+    - syncopated_anchor.json
+    - submarine.json
+    - walking_groove.json
+    - prismatic.json
+    - hollow_root.json
+  /chords (5 progressions)
     - pop_standard.json
     - minor_climb.json
     - jazzy_resolve.json
     - tension_builder.json
     - emotional_rollercoaster.json
-  /melodies
-    (coming soon)
+  /leads (10 motifs) **NEW!**
+    - neon_veins.json
+    - sigh_motif.json
+    - bolt.json
+    - halo.json
+    - glass_lead.json
+    - wisp.json
+    - driver.json
+    - orbit.json
+    - shard.json
+    - quiet_cry.json
 ```
 
 ## 🎯 Pattern File Format
@@ -156,6 +225,25 @@ Each pattern file contains:
   "pattern": [
     {"time": 0, "chord": "C", "notes": ["C3", "E3", "G3"], "duration": 4}
   ]
+}
+```
+
+### Lead Motifs
+```json
+{
+  "id": "lead_neon_veins",
+  "name": "Neon Veins",
+  "description": "Heroic, bright lead motif in E minor pentatonic",
+  "key": "E Minor Pentatonic",
+  "scale": "E - G - A - B - D",
+  "motif": "1-3-5-7-5-3",
+  "mood": "Heroic, Bright",
+  "energy": "High",
+  "pattern": [
+    {"time": 0, "note": "E4", "duration": 0.5, "velocity": 0.85},
+    {"time": 0.5, "note": "A4", "duration": 0.5, "velocity": 0.8}
+  ],
+  "tips": ["Pentatonic scale always sounds musical", "Great for uplifting choruses"]
 }
 ```
 
@@ -222,21 +310,22 @@ function loadDrumPattern(pattern) {
 
 ## 📈 Library Stats
 
-- **Total Patterns**: 17
-  - Drums: 4
-  - Bass: 8
+- **Total Patterns**: 47 🎉
+  - Drums: 14 ✨ (+10 new!)
+  - Bass: 18 ✨ (+10 new!)
   - Chords: 5
-  - Melodies: 0 (coming soon)
+  - Leads: 10 ✨ (NEW category!)
 
 ## 🚧 Future Additions
 
-- Melody/hook patterns
-- More drum variations (trap, techno, rock)
-- Extended bass patterns (slap, fingerstyle)
-- Advanced chord progressions (modal, jazz)
-- Audio previews
+- More lead/melody variations
+- Additional drum patterns (rock, metal, Latin)
+- Extended bass patterns (slap, fingerstyle, funk)
+- Advanced chord progressions (modal interchange, jazz extensions)
+- Audio previews for all patterns
 - MIDI export for each pattern
 - User-contributed patterns
+- Pattern combination presets
 
 ## 📝 Adding Your Own Patterns
 

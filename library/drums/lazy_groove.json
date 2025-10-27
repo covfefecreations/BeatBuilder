@@ -1,0 +1,21 @@
+{
+  "id": "drum_lazy_groove",
+  "name": "Lazy Groove",
+  "description": "Laid-back pattern with relaxed spacing and warm feel",
+  "genre": "Lo-Fi/Chill",
+  "energy": "Low",
+  "bpm": 160,
+  "bars": 2,
+  "instruments": ["Kick", "Snare"],
+  "notation": {
+    "bar1": {
+      "Kick": "X - - - X - - - X - - - - - X -",
+      "Snare": "- - - - - - - - - - - - - - - -"
+    },
+    "bar2": {
+      "Kick": "- - X - - - X - - - X - - - - -",
+      "Snare": "- - - - X - - - - - - - X - - -"
+    }
+  },
+  "tips": ["Relaxed, unhurried feel", "Space between hits creates groove", "Perfect for lo-fi, chill beats"]
+}
