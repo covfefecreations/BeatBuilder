@@ -1,6 +1,6 @@
 // midiManager.js
 // lightweight wrapper for WebMIDI that forwards note-on events to the audioEngine when recording
-export default class MidiManager {
+export class MidiManager {
   constructor(audioEngine) {
     this.audioEngine = audioEngine;
     this.inputs = [];

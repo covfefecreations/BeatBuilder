@@ -1,6 +1,35 @@
 // bassAdapter.js
 // Parses bass.json format with examples and notation
-export default class BassAdapter {
+export class BassAdapter {
+  /**
+   * Convert a bass pattern from the library into a track object
+   * @param {object} pattern - The bass pattern from the library
+   * @returns {object} The converted track object
+   */
+  convert(pattern) {
+    // Bass patterns in the library already have the correct pattern format
+    // Just need to add metadata and ensure active property
+    const convertedPattern = (pattern.pattern || []).map(note => ({
+      ...note,
+      active: note.active !== undefined ? note.active : true
+    }));
+
+    return {
+      id: pattern.id || `bass_${Date.now()}`,
+      title: pattern.name || 'Bass Pattern',
+      type: 'bass',
+      pattern: convertedPattern,
+      bpm: pattern.bpm || 120,
+      meta: {
+        type: 'bass',
+        description: pattern.description,
+        progression: pattern.progression,
+        energy: pattern.energy,
+        rhythm: pattern.rhythm
+      }
+    };
+  }
+
   static parseExample(example, bpm = 120) {
     const pattern = [];
 
