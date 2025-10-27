@@ -2,9 +2,11 @@
 // Visual interface for browsing and selecting patterns from the library
 
 export default class PatternSelector {
-  constructor(containerId, libraryManager) {
+  constructor(containerId, libraryManager, adapters, audioEngine) {
     this.container = document.getElementById(containerId);
     this.library = libraryManager;
+    this.adapters = adapters; // { drumAdapter, bassAdapter, chordAdapter, leadAdapter }
+    this.audioEngine = audioEngine;
     this.onPatternSelected = null; // callback when pattern is selected
     this.currentFilter = 'all';
   }
@@ -23,6 +25,7 @@ export default class PatternSelector {
             <span class="stat-item">🥁 ${this.library.drums.length} Drums</span>
             <span class="stat-item">🎸 ${this.library.bass.length} Bass</span>
             <span class="stat-item">🎹 ${this.library.chords.length} Chords</span>
+            <span class="stat-item">🎶 ${this.library.leads.length} Leads</span>
           </div>
         </div>
 
@@ -31,6 +34,7 @@ export default class PatternSelector {
           <button class="filter-btn" data-filter="drums">Drums</button>
           <button class="filter-btn" data-filter="bass">Bass</button>
           <button class="filter-btn" data-filter="chords">Chords</button>
+          <button class="filter-btn" data-filter="leads">Leads</button>
         </div>
 
         <div class="pattern-search">
@@ -59,7 +63,8 @@ export default class PatternSelector {
       patterns = [
         ...this.library.drums.map(p => ({...p, type: 'drums'})),
         ...this.library.bass.map(p => ({...p, type: 'bass'})),
-        ...this.library.chords.map(p => ({...p, type: 'chords'}))
+        ...this.library.chords.map(p => ({...p, type: 'chords'})),
+        ...this.library.leads.map(p => ({...p, type: 'leads'}))
       ];
     } else {
       patterns = this.library.getPatternsByType(filter).map(p => ({...p, type: filter}));
@@ -119,17 +124,19 @@ createPatternCard(pattern) {
    * Render individual pattern card
    */
   renderPatternCard(pattern) {
-    const typeColors = {
-      drums: '#ff4466',
-      bass: '#4488ff',
-      chords: '#aa44ff'
-    };
+	    const typeColors = {
+	      drums: '#ff4466',
+	      bass: '#4488ff',
+	      chords: '#aa44ff',
+	      leads: '#00ffee' // New color for leads
+	    };
 
-    const typeEmojis = {
-      drums: '🥁',
-      bass: '🎸',
-      chords: '🎹'
-    };
+	    const typeEmojis = {
+	      drums: '🥁',
+	      bass: '🎸',
+	      chords: '🎹',
+	      leads: '🎶'
+	    };
 
     const color = typeColors[pattern.type] || '#00ffee';
     const emoji = typeEmojis[pattern.type] || '🎵';
@@ -222,9 +229,23 @@ createPatternCard(pattern) {
   previewPattern(patternId) {
     const pattern = this.library.getPatternById(patternId);
     if (pattern) {
-      console.log('Previewing pattern:', pattern);
-      // TODO: Implement preview functionality
-      alert(`Preview: ${pattern.name}\n\n${pattern.description}\n\nFull preview coming soon!`);
+      // Add visual feedback (Acceptance Criteria 4.3)
+      const btn = this.container.querySelector(`.pattern-preview-btn[data-pattern-id="${patternId}"]`);
+      if (btn) {
+        const originalText = btn.textContent;
+        btn.textContent = '▶ Playing...';
+        btn.disabled = true;
+
+        this.library.previewPattern(pattern, this.adapters, this.audioEngine, 4)
+          .finally(() => {
+            // Restore button state after preview is done
+            btn.textContent = originalText;
+            btn.disabled = false;
+          });
+      } else {
+        // Fallback if button not found (e.g., if rendering is slow)
+        this.library.previewPattern(pattern, this.adapters, this.audioEngine, 4);
+      }
     }
   }
 

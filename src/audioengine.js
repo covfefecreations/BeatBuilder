@@ -149,6 +149,19 @@ export default class AudioEngine {
     Tone.Transport.stop();
   }
 
+  // --- Getters for LibraryManager Preview ---
+  getTracks() {
+    return this.tracks;
+  }
+
+  isPlaying() {
+    return Tone.Transport.state === 'started';
+  }
+
+  getBPM() {
+    return Tone.Transport.bpm.value;
+  }
+
   // ---------- MIDI recording API ----------
   startRecording() {
     this.recording = true;

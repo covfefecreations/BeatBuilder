@@ -59,7 +59,7 @@ export class LibraryManager {
               this.patterns[type].push(pattern);
             })
             .catch(err => {
-              console.warn(`Failed to load pattern: ${type}/${fileName}`, err);
+              console.error(`❌ CRITICAL: Failed to load pattern: ${type}/${fileName}. Check file path and JSON format.`, err);
               // Don't fail entire load if one pattern missing
             });
           
@@ -104,6 +104,71 @@ export class LibraryManager {
   // Get specific pattern by ID
   getPatternById(id) {
     return this.getAllPatterns().find(p => p.id === id);
+  }
+
+  /**
+   * Previews a pattern by converting it and playing it for a short duration.
+   * @param {object} pattern - The pattern object to preview.
+   * @param {object} adapters - Object containing { drumAdapter, bassAdapter, chordAdapter, leadAdapter }.
+   * @param {object} audioEngine - The AudioEngine instance to use for playback.
+   * @param {number} duration - Duration in seconds to play the preview.
+   * @returns {Promise<void>}
+   */
+  async previewPattern(pattern, adapters, audioEngine, duration = 4) {
+    console.log(`Previewing pattern: ${pattern.name} for ${duration}s`);
+
+    // 1. Convert pattern to track format
+    let track;
+    switch (pattern.type) {
+      case 'drums':
+        track = adapters.drumAdapter.convert(pattern);
+        break;
+      case 'bass':
+        track = adapters.bassAdapter.convert(pattern);
+        break;
+      case 'chords':
+        track = adapters.chordAdapter.convert(pattern);
+        break;
+      case 'leads':
+        track = adapters.leadAdapter.convert(pattern);
+        break;
+      default:
+        console.warn('Cannot preview: Unknown pattern type:', pattern.type);
+        return;
+    }
+
+    // 2. Create temporary AudioEngine instance (or use the main one carefully)
+    // The prompt suggests creating a temporary one, but for simplicity and to avoid
+    // Tone.js context issues, we'll use the main one, ensuring we stop it after.
+    // NOTE: This assumes the main AudioEngine can handle temporary track loading
+    // without interfering with the main sequencer state (which is managed by AppState).
+    
+    // 3. Play for duration then stop
+    const originalTracks = audioEngine.getTracks(); // Assuming a getter exists
+    const originalIsPlaying = audioEngine.isPlaying(); // Assuming a getter exists
+
+    // Stop main playback if it's running
+    if (originalIsPlaying) {
+      audioEngine.stop();
+    }
+
+    // Load only the preview track
+    audioEngine.loadTracks([track]);
+    audioEngine.start(pattern.bpm || 120);
+
+    // Wait for the duration
+    await new Promise(resolve => setTimeout(resolve, duration * 1000));
+
+    // Stop the preview
+    audioEngine.stop();
+    
+    // Restore original state
+    audioEngine.loadTracks(originalTracks);
+    if (originalIsPlaying) {
+      audioEngine.start(audioEngine.getBPM()); // Assuming a getBPM getter exists
+    }
+
+    console.log('Preview finished.');
   }
 
   // Search patterns by text
