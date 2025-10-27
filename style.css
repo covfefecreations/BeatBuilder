@@ -857,14 +857,4 @@ body {
     opacity: 1;
   }
 }
-/* ===== iOS Safari Fixes ===== */
-html, body {
-  height: 100%;
-  width: 100%;
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-  background: var(--bg-primary);
-  -webkit-overflow-scrolling: touch;
-}
-
+/* ===== 
