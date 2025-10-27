@@ -11,6 +11,7 @@ import DataManager from "./src/datamanager.js";
 import DrumAdapter from "./src/drumadapter.js";
 import BassAdapter from "./src/bassadapter.js";
 import ChordAdapter from "./src/chordadapter.js";
+import { fetchProjects, fetchProjectById, saveProject } from './src/sanityAPI.js';
 
 // --- GLOBALS ---
 let audioCtx;
