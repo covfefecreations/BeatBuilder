@@ -166,9 +166,9 @@ main{
   filter: drop-shadow(0 2px 6px rgba(2,6,23,0.6));
 }
 /* type colors */
-.step.track-drum{ fill: linear-gradient(180deg,#ffecd9,#ffc3c3); }
-.step.track-bass{ fill: linear-gradient(180deg,#dfeaff,#b4d9ff); }
-.step.track-chord{ fill: linear-gradient(180deg,#f0ddff,#d3bdff); }
+.step.track-drum{ fill: rgba(255, 68, 102, 0.15); }
+.step.track-bass{ fill: rgba(68, 145, 255, 0.15); }
+.step.track-chord{ fill: rgba(170, 109, 255, 0.15); }
 
 /* active state */
 .step.active{
