@@ -1,0 +1,22 @@
+{
+  "id": "drum_outro_minimal",
+  "name": "Outro Wind-Down",
+  "description": "Minimal ending pattern",
+  "genre": "Universal",
+  "energy": "Low",
+  "bpm": 110,
+  "bars": 2,
+  "instruments": ["Kick", "Kick2", "Snare", "Closed Hat"],
+  "notation": {
+    "bar1": {
+      "Kick": "X - - - - - X - X - - - - - X -",
+      "Kick2": "- - - - - - - - - - - x - - - -",
+      "Snare": "- - - - X - - - - - - - X - - -",
+      "Closed Hat": "X - X - - - X - X - X - - - X -"
+    },
+    "bar2": {
+      "Kick": "X - - - - - - - - - - - - - - -"
+    }
+  },
+  "tips": ["Final kick hits on downbeat", "Fade other elements"]
+}

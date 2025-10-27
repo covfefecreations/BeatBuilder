@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BeatBuilder - Pattern Library Demo</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <h1>🎵 BeatBuilder Pattern Library</h1>
+    <div class="controls">
+      <button id="loadLibraryBtn">Load Library</button>
+      <button id="randomPatternBtn">Random Pattern</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- Pattern Selector Container -->
+    <div id="patternSelectorContainer"></div>
+
+    <!-- Selected Pattern Display -->
+    <div id="selectedPatternDisplay" style="margin-top: 20px; padding: 16px; background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.00)); border-radius: 12px; border: 1px solid rgba(255,255,255,0.02);">
+      <h3 style="margin-top: 0;">Selected Pattern</h3>
+      <pre id="patternDetails" style="color: #9fb0c7; font-size: 13px; overflow-x: auto;">No pattern selected yet. Click "Load Library" to begin.</pre>
+    </div>
+
+    <!-- Status Bar -->
+    <div class="status-bar" style="margin-top: 20px;">
+      <div class="status-item">
+        <span class="status-label">Library Status:</span>
+        <span id="libraryStatus" class="status-value">Not Loaded</span>
+      </div>
+      <div class="status-item">
+        <span class="status-label">Patterns Available:</span>
+        <span id="patternsCount" class="status-value">0</span>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <p>🎧 Pattern Library System | Mix and Match Your Musical Ideas</p>
+  </footer>
+
+  <script type="module">
+    import LibraryManager from './src/librarymanager.js';
+    import PatternSelector from './src/patternselector.js';
+
+    // Initialize library manager
+    const library = new LibraryManager();
+    let selector = null;
+
+    // Load library button
+    document.getElementById('loadLibraryBtn').addEventListener('click', async () => {
+      try {
+        updateStatus('Loading...', '...');
+
+        // Load all library resources
+        await library.loadAll();
+
+        const stats = library.getStats();
+        updateStatus('Loaded', stats.totalPatterns);
+
+        // Create and render pattern selector
+        if (!selector) {
+          selector = new PatternSelector('patternSelectorContainer', library);
+
+          // Set callback for when pattern is selected
+          selector.onSelect((pattern) => {
+            displayPattern(pattern);
+          });
+        }
+
+        selector.render();
+
+        console.log('Library loaded successfully!', stats);
+      } catch (error) {
+        console.error('Error loading library:', error);
+        updateStatus('Error', 0);
+        alert('Error loading library: ' + error.message);
+      }
+    });
+
+    // Random pattern button
+    document.getElementById('randomPatternBtn').addEventListener('click', () => {
+      if (!library.loaded) {
+        alert('Please load the library first!');
+        return;
+      }
+
+      const types = ['drums', 'bass', 'chords'];
+      const randomType = types[Math.floor(Math.random() * types.length)];
+      const pattern = library.getRandomPattern(randomType);
+
+      if (pattern) {
+        displayPattern(pattern);
+      }
+    });
+
+    // Display selected pattern
+    function displayPattern(pattern) {
+      const display = document.getElementById('patternDetails');
+      display.textContent = JSON.stringify(pattern, null, 2);
+      console.log('Selected pattern:', pattern);
+    }
+
+    // Update status bar
+    function updateStatus(status, count) {
+      document.getElementById('libraryStatus').textContent = status;
+      document.getElementById('patternsCount').textContent = count;
+    }
+
+    // Auto-load library on page load (optional)
+    // Uncomment the line below to auto-load the library
+    // document.getElementById('loadLibraryBtn').click();
+  </script>
+</body>
+</html>

@@ -1,0 +1,22 @@
+{
+  "id": "chord_minor_climb",
+  "name": "The Minor Climb",
+  "description": "Dark, driving progression with modal flavor",
+  "chord_sequence": ["Am", "G", "F", "G"],
+  "emotional_character": "Urgent, determined, intense",
+  "key": "A Minor",
+  "genre": "Rock/Alternative",
+  "usage": "Verses, builds, intense sections",
+  "voicings": {
+    "Am": ["A2", "C3", "E3"],
+    "G": ["G2", "B2", "D3"],
+    "F": ["F2", "A2", "C3"]
+  },
+  "pattern": [
+    {"time": 0, "chord": "Am", "notes": ["A2", "C3", "E3"], "duration": 4, "velocity": 0.75},
+    {"time": 4, "chord": "G", "notes": ["G2", "B2", "D3"], "duration": 4, "velocity": 0.75},
+    {"time": 8, "chord": "F", "notes": ["F2", "A2", "C3"], "duration": 4, "velocity": 0.75},
+    {"time": 12, "chord": "G", "notes": ["G2", "B2", "D3"], "duration": 4, "velocity": 0.75}
+  ],
+  "tips": ["Emphasize power chords", "Great for distorted guitar", "Build dynamics"]
+}

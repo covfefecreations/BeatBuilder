@@ -1,0 +1,25 @@
+{
+  "id": "bass_disco",
+  "name": "The Disco Drive",
+  "description": "Four-on-the-floor disco bassline with octave jumps",
+  "progression": "Am - F - C - G",
+  "energy": "Medium-High",
+  "rhythm": "8th Notes with Octaves",
+  "notation": "A a A · | F f F · | C c C · | G g G ·",
+  "notes": ["A", "F", "C", "G"],
+  "pattern": [
+    {"time": 0, "note": "A2", "duration": 0.5, "velocity": 0.9},
+    {"time": 0.5, "note": "A3", "duration": 0.5, "velocity": 0.7},
+    {"time": 1, "note": "A2", "duration": 0.5, "velocity": 0.85},
+    {"time": 4, "note": "F2", "duration": 0.5, "velocity": 0.9},
+    {"time": 4.5, "note": "F3", "duration": 0.5, "velocity": 0.7},
+    {"time": 5, "note": "F2", "duration": 0.5, "velocity": 0.85},
+    {"time": 8, "note": "C3", "duration": 0.5, "velocity": 0.9},
+    {"time": 8.5, "note": "C4", "duration": 0.5, "velocity": 0.7},
+    {"time": 9, "note": "C3", "duration": 0.5, "velocity": 0.85},
+    {"time": 12, "note": "G2", "duration": 0.5, "velocity": 0.9},
+    {"time": 12.5, "note": "G3", "duration": 0.5, "velocity": 0.7},
+    {"time": 13, "note": "G2", "duration": 0.5, "velocity": 0.85}
+  ],
+  "tips": ["Lock with kick drum", "Octave jumps add energy", "Keep it tight and punchy"]
+}

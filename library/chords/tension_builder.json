@@ -1,0 +1,23 @@
+{
+  "id": "chord_tension_builder",
+  "name": "The Tension Builder",
+  "description": "Anticipation and payoff - melancholic to triumphant",
+  "chord_sequence": ["Am", "F", "C", "G"],
+  "emotional_character": "Melancholic → hopeful → triumphant",
+  "key": "C Major/A Minor",
+  "genre": "Pop/Singer-Songwriter",
+  "usage": "Choruses, emotional peaks",
+  "voicings": {
+    "Am": ["A2", "C3", "E3"],
+    "F": ["F2", "A2", "C3"],
+    "C": ["C3", "E3", "G3"],
+    "G": ["G2", "B2", "D3"]
+  },
+  "pattern": [
+    {"time": 0, "chord": "Am", "notes": ["A2", "C3", "E3"], "duration": 4, "velocity": 0.7},
+    {"time": 4, "chord": "F", "notes": ["F2", "A2", "C3"], "duration": 4, "velocity": 0.7},
+    {"time": 8, "chord": "C", "notes": ["C3", "E3", "G3"], "duration": 4, "velocity": 0.75},
+    {"time": 12, "chord": "G", "notes": ["G2", "B2", "D3"], "duration": 4, "velocity": 0.75}
+  ],
+  "tips": ["Build dynamics through progression", "Great for emotional storytelling"]
+}

@@ -1,0 +1,23 @@
+{
+  "id": "chord_emotional_rollercoaster",
+  "name": "The Emotional Roller Coaster",
+  "description": "Wistful, nostalgic progression - sweet sadness",
+  "chord_sequence": ["C", "Em", "Am", "F"],
+  "emotional_character": "Sweet sadness, wistful, nostalgic",
+  "key": "C Major",
+  "genre": "Indie/Folk",
+  "usage": "Verses, storytelling sections",
+  "voicings": {
+    "C": ["C3", "E3", "G3"],
+    "Em": ["E2", "G2", "B2"],
+    "Am": ["A2", "C3", "E3"],
+    "F": ["F2", "A2", "C3"]
+  },
+  "pattern": [
+    {"time": 0, "chord": "C", "notes": ["C3", "E3", "G3"], "duration": 4, "velocity": 0.7},
+    {"time": 4, "chord": "Em", "notes": ["E2", "G2", "B2"], "duration": 4, "velocity": 0.7},
+    {"time": 8, "chord": "Am", "notes": ["A2", "C3", "E3"], "duration": 4, "velocity": 0.7},
+    {"time": 12, "chord": "F", "notes": ["F2", "A2", "C3"], "duration": 4, "velocity": 0.7}
+  ],
+  "tips": ["Gentle strumming works well", "Add suspended chords for color", "Perfect for acoustic arrangements"]
+}

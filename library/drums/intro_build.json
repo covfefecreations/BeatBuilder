@@ -1,0 +1,34 @@
+{
+  "id": "drum_intro_build",
+  "name": "Intro Build",
+  "description": "Building drum pattern from minimal to full kit",
+  "genre": "Universal",
+  "energy": "Low to Medium",
+  "bpm": 110,
+  "bars": 4,
+  "instruments": ["Kick", "Snare", "Closed Hat", "Open Hat", "Sub Kick", "Clap", "Tom"],
+  "notation": {
+    "bar1": {
+      "Kick": "X - - - - - - - X - - - - - - -",
+      "Closed Hat": "X - - - X - - - X - - - X - - -"
+    },
+    "bar2": {
+      "Kick": "X - - - - - - - X - - - - - - -",
+      "Snare": "- - - - X - - - - - - - X - - -"
+    },
+    "bar3": {
+      "Kick": "X - - - - - - - X - - - - - - -",
+      "Snare": "- - - - X - - - - - - - X - - -",
+      "Open Hat": "- - - - - - - X - - - - - - - X",
+      "Closed Hat": "X - X - - - X - X - X - - - X -"
+    },
+    "bar4": {
+      "Kick": "X - - - - - - - X - - - - - - -",
+      "Sub Kick": "X - - - - - - - X - - - - - - -",
+      "Snare": "- - - - X - - - - - - - X - x x",
+      "Clap": "- - - - X - - - - - - - X - - -",
+      "Tom": "- - - - - - - - - - - - - X X -"
+    }
+  },
+  "tips": ["Ghost notes at 30-50% velocity on snare bar 4", "Sub kick -6 to -12dB"]
+}

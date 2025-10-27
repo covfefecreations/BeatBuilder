@@ -1,0 +1,21 @@
+{
+  "id": "bass_anticipation",
+  "name": "The Anticipation",
+  "description": "Bass anticipates chord changes - creates forward momentum",
+  "progression": "C - G - Am - F",
+  "energy": "Medium-High",
+  "rhythm": "Anticipation on 'a' of beat 4",
+  "notation": "anticipation on 'a' of beat 4",
+  "notes": ["C", "G", "A", "F"],
+  "pattern": [
+    {"time": 0, "note": "C3", "duration": 3.5, "velocity": 0.8},
+    {"time": 3.75, "note": "G2", "duration": 0.25, "velocity": 0.75},
+    {"time": 4, "note": "G2", "duration": 3.5, "velocity": 0.8},
+    {"time": 7.75, "note": "A2", "duration": 0.25, "velocity": 0.75},
+    {"time": 8, "note": "A2", "duration": 3.5, "velocity": 0.8},
+    {"time": 11.75, "note": "F2", "duration": 0.25, "velocity": 0.75},
+    {"time": 12, "note": "F2", "duration": 3.5, "velocity": 0.8},
+    {"time": 15.75, "note": "C3", "duration": 0.25, "velocity": 0.75}
+  ],
+  "tips": ["Anticipate by 16th note", "Creates tension and release", "Great for pop/rock"]
+}
