@@ -83,7 +83,6 @@ export class UIController {
 	      }
 	    });
 	  }
-  }
 
   /**
    * Set up subscriptions to AppState changes.

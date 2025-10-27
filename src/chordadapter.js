@@ -1,6 +1,37 @@
 // chordAdapter.js
 // Parses chords.json format with progressions
-export default class ChordAdapter {
+export class ChordAdapter {
+  /**
+   * Convert a chord pattern from the library into a track object
+   * @param {object} pattern - The chord pattern from the library
+   * @returns {object} The converted track object
+   */
+  convert(pattern) {
+    // Chord patterns need to convert from notes array to note string
+    const convertedPattern = (pattern.pattern || []).map(item => ({
+      time: item.time,
+      note: item.chord || item.note || 'C', // Use chord symbol if available
+      duration: item.duration || 4,
+      velocity: item.velocity || 0.7,
+      active: item.active !== undefined ? item.active : true
+    }));
+
+    return {
+      id: pattern.id || `chord_${Date.now()}`,
+      title: pattern.name || 'Chord Pattern',
+      type: 'chords',
+      pattern: convertedPattern,
+      bpm: pattern.bpm || 120,
+      meta: {
+        type: 'chords',
+        description: pattern.description,
+        emotional_character: pattern.emotional_character,
+        key: pattern.key,
+        genre: pattern.genre
+      }
+    };
+  }
+
   static parseProgression(chordSequence, bpm = 120) {
     const pattern = [];
     const barLength = 4; // Each chord lasts 4 beats (1 bar)

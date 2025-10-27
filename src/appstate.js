@@ -228,17 +228,4 @@ export class AppState {
       return null;
     }
   }
-
-  /**
-   * Convert the state to a JSON string (for future Sanity.io prep).
-   * @returns {string} JSON string representation of the state.
-   */
-	  // toJSON is now defined in the previous edit block. Removing the original.
-
-  /**
-   * Create state object from a JSON string.
-   * @param {string} jsonString - JSON string.
-   * @returns {object} State object.
-   */
-	  // fromJSON is now defined in the previous edit block. Removing the original.
 }

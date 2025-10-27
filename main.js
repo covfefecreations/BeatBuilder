@@ -563,5 +563,3 @@ window.addEventListener('unhandledrejection', (event) => {
 // Export for module systems (if needed)
 // =====================================================
 export default BeatBuilderApp;
-```
-

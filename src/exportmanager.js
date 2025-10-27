@@ -1,6 +1,6 @@
 // exportManager.js
 // Uses MidiWriterJS (loaded from CDN in index.html) to export simple MIDI
-export default class ExportManager {
+export class ExportManager {
   exportJSON(obj, filename = "session.json") {
     const blob = new Blob([JSON.stringify(obj, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);

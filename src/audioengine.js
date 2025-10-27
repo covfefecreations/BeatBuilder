@@ -6,7 +6,7 @@
 // - record incoming MIDI note events (timestamped) and quantize into patterns
 // Note: Expects Tone.js to be loaded globally from CDN
 
-export default class AudioEngine {
+export class AudioEngine {
 	  constructor(appState) {
 	    this.appState = appState;
     this.tracks = []; // sequencer-ready tracks
@@ -214,6 +214,10 @@ export default class AudioEngine {
 
   getBPM() {
     return Tone.Transport.bpm.value;
+  }
+
+  setBPM(bpm) {
+    Tone.Transport.bpm.value = bpm;
   }
 
   // ---------- MIDI recording API ----------

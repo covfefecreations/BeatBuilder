@@ -17,15 +17,16 @@ export default class PatternSelector {
   render() {
     if (!this.container) return;
 
+    const stats = this.library.getStats();
     const html = `
       <div class="pattern-selector">
         <div class="pattern-selector-header">
           <h3>Pattern Library</h3>
           <div class="pattern-stats">
-            <span class="stat-item">🥁 ${this.library.drums.length} Drums</span>
-            <span class="stat-item">🎸 ${this.library.bass.length} Bass</span>
-            <span class="stat-item">🎹 ${this.library.chords.length} Chords</span>
-            <span class="stat-item">🎶 ${this.library.leads.length} Leads</span>
+            <span class="stat-item">🥁 ${stats.byType.drums} Drums</span>
+            <span class="stat-item">🎸 ${stats.byType.bass} Bass</span>
+            <span class="stat-item">🎹 ${stats.byType.chords} Chords</span>
+            <span class="stat-item">🎶 ${stats.byType.leads} Leads</span>
           </div>
         </div>
 
@@ -60,49 +61,11 @@ export default class PatternSelector {
     let patterns = [];
 
     if (filter === 'all') {
-      patterns = [
-        ...this.library.drums.map(p => ({...p, type: 'drums'})),
-        ...this.library.bass.map(p => ({...p, type: 'bass'})),
-        ...this.library.chords.map(p => ({...p, type: 'chords'})),
-        ...this.library.leads.map(p => ({...p, type: 'leads'}))
-      ];
+      patterns = this.library.getAllPatterns();
     } else {
-      patterns = this.library.getPatternsByType(filter).map(p => ({...p, type: filter}));
+      patterns = this.library.getPatternsByType(filter);
     }
-// In createPatternCard method, add preview button
 
-createPatternCard(pattern) {
-  const card = document.createElement('div');
-  card.className = 'pattern-card';
-  
-  card.innerHTML = `
-    <h3>${pattern.name}</h3>
-    <p class="description">${pattern.description}</p>
-    <div class="meta">
-      <span class="badge">${pattern.genre.join(', ')}</span>
-      <span class="badge">${pattern.bpm} BPM</span>
-      <span class="badge">${pattern.energy}</span>
-    </div>
-    <div class="card-actions">
-      <button class="btn-preview" data-id="${pattern.id}">🔊 Preview</button>
-      <button class="btn-load" data-id="${pattern.id}">+ Load</button>
-    </div>
-  `;
-
-  // Preview button handler
-  card.querySelector('.btn-preview').addEventListener('click', (e) => {
-    e.stopPropagation();
-    this.libraryManager.previewPattern(pattern);
-  });
-
-  // Load button handler (existing)
-  card.querySelector('.btn-load').addEventListener('click', (e) => {
-    e.stopPropagation();
-    this.onPatternSelect(pattern);
-  });
-
-  return card;
-}
     // Apply search filter
     if (searchTerm) {
       const search = searchTerm.toLowerCase();
