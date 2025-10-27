@@ -56,29 +56,32 @@ class BeatBuilderApp {
   async init() {
     try {
       console.log('🚀 Initializing BeatBuilder v2.0...');
-      
+
       // Step 1: Verify DOM elements exist
       this.verifyDOMElements();
 
-      // Step 2: Initialize UI Controller
+      // Step 2: Initialize Audio Engine
+      await this.initializeAudioEngine();
+
+      // Step 3: Initialize UI Controller
       this.initializeUIController();
 
-      // Step 3: Initialize Visual Sequencer
+      // Step 4: Initialize Visual Sequencer
       this.initializeVisualSequencer();
 
-      // Step 4: Load pattern library
+      // Step 5: Load pattern library
       await this.loadLibrary();
 
-      // Step 5: Initialize Pattern Selector
+      // Step 6: Initialize Pattern Selector
       this.initializePatternSelector();
 
-      // Step 6: Restore or initialize session
+      // Step 7: Restore or initialize session
       await this.initializeSession();
 
-      // Step 7: Set up auto-save
+      // Step 8: Set up auto-save
       this.startAutoSave();
 
-      // Step 8: Set up library toggle
+      // Step 9: Set up library toggle
       this.setupLibraryToggle();
 
       // Mark as initialized
@@ -116,6 +119,16 @@ class BeatBuilderApp {
     }
 
     console.log('✅ DOM elements verified');
+  }
+
+  /**
+   * Initialize the Audio Engine with synthesizers
+   */
+  async initializeAudioEngine() {
+    // Initialize with empty samples object - synths will be created
+    // Drum samples can be added later if needed
+    await this.audioEngine.init({});
+    console.log('✅ Audio Engine initialized');
   }
 
   /**
