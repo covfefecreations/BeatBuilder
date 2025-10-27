@@ -1,0 +1,21 @@
+{
+  "id": "bass_reggae",
+  "name": "The Reggae One-Drop",
+  "description": "Classic reggae offbeat bass - emphasis on beats 2 and 4",
+  "progression": "C - Am - F - G",
+  "energy": "Medium",
+  "rhythm": "Offbeat (+'s)",
+  "notation": "notes on +'s (offbeat)",
+  "notes": ["C", "A", "F", "G"],
+  "pattern": [
+    {"time": 0.5, "note": "C3", "duration": 0.5, "velocity": 0.8},
+    {"time": 2.5, "note": "C3", "duration": 0.5, "velocity": 0.8},
+    {"time": 4.5, "note": "A2", "duration": 0.5, "velocity": 0.8},
+    {"time": 6.5, "note": "A2", "duration": 0.5, "velocity": 0.8},
+    {"time": 8.5, "note": "F2", "duration": 0.5, "velocity": 0.8},
+    {"time": 10.5, "note": "F2", "duration": 0.5, "velocity": 0.8},
+    {"time": 12.5, "note": "G2", "duration": 0.5, "velocity": 0.8},
+    {"time": 14.5, "note": "G2", "duration": 0.5, "velocity": 0.8}
+  ],
+  "tips": ["Avoid downbeats", "Lock with rim/snare on 3", "Leave space for rhythm guitar"]
+}

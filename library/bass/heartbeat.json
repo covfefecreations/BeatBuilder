@@ -1,0 +1,29 @@
+{
+  "id": "bass_heartbeat",
+  "name": "The Heartbeat",
+  "description": "Steady quarter note pulse - reliable and driving",
+  "progression": "Am - G - F - G",
+  "energy": "Low-Medium",
+  "rhythm": "Quarter Notes",
+  "notation": "A A A A | G G G G | F F F F | G G G G",
+  "notes": ["A", "G", "F", "G"],
+  "pattern": [
+    {"time": 0, "note": "A2", "duration": 1, "velocity": 0.75},
+    {"time": 1, "note": "A2", "duration": 1, "velocity": 0.75},
+    {"time": 2, "note": "A2", "duration": 1, "velocity": 0.75},
+    {"time": 3, "note": "A2", "duration": 1, "velocity": 0.75},
+    {"time": 4, "note": "G2", "duration": 1, "velocity": 0.75},
+    {"time": 5, "note": "G2", "duration": 1, "velocity": 0.75},
+    {"time": 6, "note": "G2", "duration": 1, "velocity": 0.75},
+    {"time": 7, "note": "G2", "duration": 1, "velocity": 0.75},
+    {"time": 8, "note": "F2", "duration": 1, "velocity": 0.75},
+    {"time": 9, "note": "F2", "duration": 1, "velocity": 0.75},
+    {"time": 10, "note": "F2", "duration": 1, "velocity": 0.75},
+    {"time": 11, "note": "F2", "duration": 1, "velocity": 0.75},
+    {"time": 12, "note": "G2", "duration": 1, "velocity": 0.75},
+    {"time": 13, "note": "G2", "duration": 1, "velocity": 0.75},
+    {"time": 14, "note": "G2", "duration": 1, "velocity": 0.75},
+    {"time": 15, "note": "G2", "duration": 1, "velocity": 0.75}
+  ],
+  "tips": ["Lock with kick drum", "Emphasize downbeats", "Steady energy"]
+}

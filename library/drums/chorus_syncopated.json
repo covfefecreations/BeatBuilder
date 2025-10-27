@@ -1,0 +1,32 @@
+{
+  "id": "drum_chorus_syncopated",
+  "name": "Chorus Syncopated",
+  "description": "Syncopated kick pattern with tight hi-hats",
+  "genre": "Hip-Hop/Pop",
+  "energy": "Medium-High",
+  "bpm": 110,
+  "bars": 4,
+  "instruments": ["Kick", "Kick2", "Sub Kick", "Snare", "Closed Hat"],
+  "notation": {
+    "bar1": {
+      "Kick": "X - - - - - X - X - - - - - - -",
+      "Kick2": "- - - - - - - - - - - x - - - -",
+      "Sub Kick": "X - - - - - - - X - - - - - - -",
+      "Snare": "- - - - X - - - - - - - X - - -",
+      "Closed Hat": "X - X - - - X - X - X - - - X -"
+    },
+    "bar2": {
+      "Kick": "X - - - - - X - X - - - - - - -",
+      "Closed Hat": "X - X - - - X - X - X - - - X -"
+    },
+    "bar3": {
+      "Kick": "X - - - - - X - X - - - - - X -",
+      "Kick2": "- - - x - - - - - - - x - - - x"
+    },
+    "bar4": {
+      "Kick": "X - - - - - X - X - - - - - - -",
+      "Closed Hat": "X - X - - - X - X - X - - - X -"
+    }
+  },
+  "tips": ["Ghost notes on Kick2 add subtle depth", "Syncopated kick on '&' of 3"]
+}

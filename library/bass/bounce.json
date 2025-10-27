@@ -1,0 +1,29 @@
+{
+  "id": "bass_bounce",
+  "name": "The Bounce",
+  "description": "Root-fifth bounce pattern - adds movement and groove",
+  "progression": "C - G - Am - F",
+  "energy": "Medium",
+  "rhythm": "8th Notes (Root-Fifth)",
+  "notation": "C g C g | G d G d | A e A e | F c F c",
+  "notes": ["C", "G", "D", "A", "E", "F"],
+  "pattern": [
+    {"time": 0, "note": "C3", "duration": 0.5, "velocity": 0.85},
+    {"time": 0.5, "note": "G2", "duration": 0.5, "velocity": 0.6},
+    {"time": 1, "note": "C3", "duration": 0.5, "velocity": 0.85},
+    {"time": 1.5, "note": "G2", "duration": 0.5, "velocity": 0.6},
+    {"time": 4, "note": "G3", "duration": 0.5, "velocity": 0.85},
+    {"time": 4.5, "note": "D3", "duration": 0.5, "velocity": 0.6},
+    {"time": 5, "note": "G3", "duration": 0.5, "velocity": 0.85},
+    {"time": 5.5, "note": "D3", "duration": 0.5, "velocity": 0.6},
+    {"time": 8, "note": "A3", "duration": 0.5, "velocity": 0.85},
+    {"time": 8.5, "note": "E3", "duration": 0.5, "velocity": 0.6},
+    {"time": 9, "note": "A3", "duration": 0.5, "velocity": 0.85},
+    {"time": 9.5, "note": "E3", "duration": 0.5, "velocity": 0.6},
+    {"time": 12, "note": "F3", "duration": 0.5, "velocity": 0.85},
+    {"time": 12.5, "note": "C3", "duration": 0.5, "velocity": 0.6},
+    {"time": 13, "note": "F3", "duration": 0.5, "velocity": 0.85},
+    {"time": 13.5, "note": "C3", "duration": 0.5, "velocity": 0.6}
+  ],
+  "tips": ["Root note louder than fifth", "Swing feel optional", "Great for pop/rock"]
+}

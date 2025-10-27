@@ -1,0 +1,29 @@
+{
+  "id": "bass_walking",
+  "name": "The Walking Line",
+  "description": "Classic jazz walking bass - smooth chromatic movement",
+  "progression": "Cmaj7 - Am7 - Dm7 - G7",
+  "energy": "Medium",
+  "rhythm": "Quarter Notes Walking",
+  "notation": "C E G B | A G F E | D F A C | G F E D",
+  "notes": ["C", "E", "G", "B", "A", "F", "D"],
+  "pattern": [
+    {"time": 0, "note": "C3", "duration": 1, "velocity": 0.75},
+    {"time": 1, "note": "E3", "duration": 1, "velocity": 0.75},
+    {"time": 2, "note": "G3", "duration": 1, "velocity": 0.75},
+    {"time": 3, "note": "B3", "duration": 1, "velocity": 0.75},
+    {"time": 4, "note": "A3", "duration": 1, "velocity": 0.75},
+    {"time": 5, "note": "G3", "duration": 1, "velocity": 0.75},
+    {"time": 6, "note": "F3", "duration": 1, "velocity": 0.75},
+    {"time": 7, "note": "E3", "duration": 1, "velocity": 0.75},
+    {"time": 8, "note": "D3", "duration": 1, "velocity": 0.75},
+    {"time": 9, "note": "F3", "duration": 1, "velocity": 0.75},
+    {"time": 10, "note": "A3", "duration": 1, "velocity": 0.75},
+    {"time": 11, "note": "C4", "duration": 1, "velocity": 0.75},
+    {"time": 12, "note": "G3", "duration": 1, "velocity": 0.75},
+    {"time": 13, "note": "F3", "duration": 1, "velocity": 0.75},
+    {"time": 14, "note": "E3", "duration": 1, "velocity": 0.75},
+    {"time": 15, "note": "D3", "duration": 1, "velocity": 0.75}
+  ],
+  "tips": ["Smooth legato playing", "Use chord tones and passing tones", "Perfect for jazz/lounge"]
+}

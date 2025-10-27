@@ -1,0 +1,23 @@
+{
+  "id": "chord_pop_standard",
+  "name": "The Pop Standard",
+  "description": "The timeless I-V-vi-IV progression - optimistic yet emotionally resonant",
+  "chord_sequence": ["C", "G", "Am", "F"],
+  "emotional_character": "Hopeful, anthemic, bittersweet optimism",
+  "key": "C Major",
+  "genre": "Pop/Rock",
+  "usage": "Verses, choruses, entire songs",
+  "voicings": {
+    "C": ["C3", "E3", "G3"],
+    "G": ["G2", "B2", "D3"],
+    "Am": ["A2", "C3", "E3"],
+    "F": ["F2", "A2", "C3"]
+  },
+  "pattern": [
+    {"time": 0, "chord": "C", "notes": ["C3", "E3", "G3"], "duration": 4, "velocity": 0.7},
+    {"time": 4, "chord": "G", "notes": ["G2", "B2", "D3"], "duration": 4, "velocity": 0.7},
+    {"time": 8, "chord": "Am", "notes": ["A2", "C3", "E3"], "duration": 4, "velocity": 0.7},
+    {"time": 12, "chord": "F", "notes": ["F2", "A2", "C3"], "duration": 4, "velocity": 0.7}
+  ],
+  "tips": ["Works in any key", "Try different rhythms", "Add 7ths for color"]
+}

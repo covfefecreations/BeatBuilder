@@ -1,0 +1,17 @@
+{
+  "id": "bass_foundation",
+  "name": "The Foundation",
+  "description": "Minimal whole note bass - perfect for space and breathing room",
+  "progression": "C - G - Am - F",
+  "energy": "Minimal",
+  "rhythm": "Whole Notes",
+  "notation": "C---- | G---- | A---- | F----",
+  "notes": ["C", "G", "A", "F"],
+  "pattern": [
+    {"time": 0, "note": "C3", "duration": 4, "velocity": 0.8},
+    {"time": 4, "note": "G2", "duration": 4, "velocity": 0.8},
+    {"time": 8, "note": "A2", "duration": 4, "velocity": 0.8},
+    {"time": 12, "note": "F2", "duration": 4, "velocity": 0.8}
+  ],
+  "tips": ["Let notes ring", "Great for sparse arrangements", "Use with minimal drums"]
+}

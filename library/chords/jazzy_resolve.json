@@ -1,0 +1,23 @@
+{
+  "id": "chord_jazzy_resolve",
+  "name": "The Jazzy Resolve",
+  "description": "Dreamy, sophisticated progression with 7th chords",
+  "chord_sequence": ["Fmaj7", "G7", "Em7", "Am"],
+  "emotional_character": "Introspective, sophisticated, dreamy",
+  "key": "A Minor/C Major",
+  "genre": "Jazz/Neo-Soul",
+  "usage": "Verses, bridges, intros",
+  "voicings": {
+    "Fmaj7": ["F2", "A2", "C3", "E3"],
+    "G7": ["G2", "B2", "D3", "F3"],
+    "Em7": ["E2", "G2", "B2", "D3"],
+    "Am": ["A2", "C3", "E3"]
+  },
+  "pattern": [
+    {"time": 0, "chord": "Fmaj7", "notes": ["F2", "A2", "C3", "E3"], "duration": 4, "velocity": 0.65},
+    {"time": 4, "chord": "G7", "notes": ["G2", "B2", "D3", "F3"], "duration": 4, "velocity": 0.65},
+    {"time": 8, "chord": "Em7", "notes": ["E2", "G2", "B2", "D3"], "duration": 4, "velocity": 0.65},
+    {"time": 12, "chord": "Am", "notes": ["A2", "C3", "E3"], "duration": 4, "velocity": 0.7}
+  ],
+  "tips": ["Use smooth voice leading", "Add 9ths and 11ths", "Perfect for Rhodes/keys"]
+}

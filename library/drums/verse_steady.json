@@ -1,0 +1,33 @@
+{
+  "id": "drum_verse_steady",
+  "name": "Verse Steady Groove",
+  "description": "Steady verse groove with hat variations",
+  "genre": "Hip-Hop/R&B",
+  "energy": "Medium",
+  "bpm": 110,
+  "bars": 4,
+  "instruments": ["Kick", "Kick2", "Sub Kick", "Snare", "Closed Hat", "Open Hat"],
+  "notation": {
+    "bar1": {
+      "Kick": "X - - - - - - - X - - - - - - -",
+      "Snare": "- - - - X - - - - - - - X - - -",
+      "Open Hat": "- - - - - - - X - - - - - - - -",
+      "Closed Hat": "X - X - X - X - X - X - X - X -"
+    },
+    "bar2": {
+      "Kick": "X - - - - - - - X - - - - - - -",
+      "Snare": "- - - - x X - - x - - - x X - -",
+      "Closed Hat": "X - X - X - X - X - X - X - X -"
+    },
+    "bar3": {
+      "Kick": "X - - - - - - - X - - - - - - -",
+      "Kick2": "- - - - - - X - - - - - - - X -"
+    },
+    "bar4": {
+      "Kick": "X - - - - - X - X - - - - - X -",
+      "Kick2": "- - - - - - - - - - - x - - - x",
+      "Sub Kick": "X - - - - - - - X - - - - - X -"
+    }
+  },
+  "tips": ["Ghost snares add groove", "16th note closed hats create steady drive"]
+}
