@@ -1,141 +1,163 @@
-// src/uicontroller.js - Handles all UI interactions
+// main.js - Application initialization and orchestration (SIMPLIFIED)
 
-export class UIController {
-  constructor(appState, audioEngine, libraryManager) {
-    this.state = appState;
-    this.audio = audioEngine;
-    this.library = libraryManager;
+import { AudioEngine } from './src/audioengine.js';
+import { MidiManager } from './src/midimanager.js';
+import { ExportManager } from './src/exportmanager.js';
+import { LibraryManager } from './src/librarymanager.js';
+import { AppState } from './src/appstate.js';
+import { UIController } from './src/uicontroller.js';
+import { PatternSelector } from './src/patternselector.js';
+import { VisualSequencer } from './src/visualsequencer.js';
+
+class BeatBuilderApp {
+  constructor() {
+    this.state = new AppState();
+    this.audioEngine = new AudioEngine();
+    this.midiManager = new MidiManager(this.audioEngine);
+    this.exportManager = new ExportManager();
+    this.libraryManager = new LibraryManager();
     
-    this.elements = this.cacheElements();
-    this.setupEventListeners();
+    this.uiController = null;
+    this.patternSelector = null;
+    this.visualSequencer = null;
   }
 
-  cacheElements() {
+  async init() {
+    try {
+      console.log('🚀 Initializing BeatBuilder v0.4.0...');
+
+      // Load library patterns
+      await this.libraryManager.loadAllPatterns();
+      console.log('✅ Library loaded:', this.libraryManager.getStats());
+
+      // Initialize UI controller
+      this.uiController = new UIController(
+        this.state,
+        this.audioEngine,
+        this.libraryManager
+      );
+
+      // Initialize pattern selector
+      this.patternSelector = new PatternSelector(
+        this.libraryManager,
+        (pattern) => this.loadPattern(pattern)
+      );
+      this.patternSelector.render(document.getElementById('library-panel'));
+
+      // Initialize visual sequencer
+      this.visualSequencer = new VisualSequencer(
+        document.getElementById('sequencer-container'),
+        this.state
+      );
+
+      // Try to load last session from localStorage
+      if (this.state.loadFromLocalStorage()) {
+        console.log('✅ Restored previous session');
+        this.visualSequencer.render(this.state.get('tracks'));
+      } else {
+        // Load a default pattern for demo
+        const defaultPattern = this.libraryManager.getPatternById('chorus_syncopated');
+        if (defaultPattern) {
+          this.loadPattern(defaultPattern);
+        }
+      }
+
+      // Auto-save session every 30 seconds
+      setInterval(() => {
+        this.state.saveToLocalStorage();
+      }, 30000);
+
+      console.log('✅ BeatBuilder ready!');
+
+    } catch (error) {
+      console.error('❌ Initialization failed:', error);
+      alert('Failed to initialize BeatBuilder. Check console for details.');
+    }
+  }
+
+  loadPattern(pattern) {
+    console.log('Loading pattern:', pattern.name);
+    
+    // Convert pattern to track format based on type
+    let track;
+    switch (pattern.type) {
+      case 'drums':
+        track = this.convertDrumPattern(pattern);
+        break;
+      case 'bass':
+        track = this.convertBassPattern(pattern);
+        break;
+      case 'chords':
+        track = this.convertChordPattern(pattern);
+        break;
+      case 'leads':
+        track = this.convertLeadPattern(pattern);
+        break;
+      default:
+        console.warn('Unknown pattern type:', pattern.type);
+        return;
+    }
+
+    // Add track to state
+    const tracks = this.state.get('tracks');
+    tracks.push(track);
+    this.state.set('tracks', tracks);
+
+    // Update visual sequencer
+    this.visualSequencer.render(tracks);
+
+    // Load into audio engine
+    this.audioEngine.loadTracks(tracks);
+  }
+
+  convertDrumPattern(pattern) {
+    // Use existing DrumAdapter logic
+    // (Simplified - implement based on your adapter)
     return {
-      playButton: document.getElementById('play-button'),
-      stopButton: document.getElementById('stop-button'),
-      bpmInput: document.getElementById('bpm-input'),
-      
-      libraryToggle: document.getElementById('library-toggle'),
-      libraryPanel: document.getElementById('library-panel'),
-      
-      recordButton: document.getElementById('record-button'),
-      recordStopButton: document.getElementById('record-stop-button'),
-      quantizeSelect: document.getElementById('quantize-select'),
-      
-      exportJsonButton: document.getElementById('export-json'),
-      exportMidiButton: document.getElementById('export-midi'),
-      
-      statusBar: document.getElementById('status-bar'),
-      sequencerContainer: document.getElementById('sequencer-container')
+      id: pattern.id,
+      title: pattern.name,
+      type: 'drums',
+      pattern: [], // Convert pattern.notation to event array
+      bpm: pattern.bpm
     };
   }
 
-  setupEventListeners() {
-    // Playback controls
-    this.elements.playButton.addEventListener('click', () => this.handlePlay());
-    this.elements.stopButton.addEventListener('click', () => this.handleStop());
-    this.elements.bpmInput.addEventListener('change', (e) => this.handleBPMChange(e));
-
-    // Library controls
-    this.elements.libraryToggle.addEventListener('click', () => this.toggleLibrary());
-
-    // MIDI controls
-    this.elements.recordButton.addEventListener('click', () => this.handleRecord());
-    this.elements.recordStopButton.addEventListener('click', () => this.handleRecordStop());
-    this.elements.quantizeSelect.addEventListener('change', (e) => {
-      this.state.set('quantizeValue', e.target.value);
-    });
-
-    // Export controls
-    this.elements.exportJsonButton.addEventListener('click', () => this.handleExportJSON());
-    this.elements.exportMidiButton.addEventListener('click', () => this.handleExportMIDI());
-
-    // State listeners
-    this.state.subscribe('isPlaying', (playing) => this.updatePlayButton(playing));
-    this.state.subscribe('bpm', (bpm) => this.updateBPMDisplay(bpm));
-    this.state.subscribe('currentBeat', (beat) => this.updateStatusBar(beat));
+  convertBassPattern(pattern) {
+    // Use existing BassAdapter logic
+    return {
+      id: pattern.id,
+      title: pattern.name,
+      type: 'bass',
+      pattern: [],
+      bpm: pattern.bpm
+    };
   }
 
-  handlePlay() {
-    if (!this.state.get('isPlaying')) {
-      this.audio.startPlayback();
-      this.state.set('isPlaying', true);
-    }
+  convertChordPattern(pattern) {
+    // Use existing ChordAdapter logic
+    return {
+      id: pattern.id,
+      title: pattern.name,
+      type: 'chords',
+      pattern: [],
+      bpm: pattern.bpm
+    };
   }
 
-  handleStop() {
-    if (this.state.get('isPlaying')) {
-      this.audio.stopPlayback();
-      this.state.set('isPlaying', false);
-      this.state.set('currentBeat', 0);
-    }
-  }
-
-  handleBPMChange(event) {
-    const bpm = parseInt(event.target.value, 10);
-    if (bpm >= 60 && bpm <= 200) {
-      this.state.set('bpm', bpm);
-      this.audio.setBPM(bpm);
-    }
-  }
-
-  toggleLibrary() {
-    const visible = !this.state.get('libraryVisible');
-    this.state.set('libraryVisible', visible);
-    this.elements.libraryPanel.classList.toggle('visible', visible);
-  }
-
-  handleRecord() {
-    this.audio.startRecording();
-    this.state.set('isRecording', true);
-    this.elements.recordButton.classList.add('recording');
-  }
-
-  handleRecordStop() {
-    const recordedNotes = this.audio.stopRecording();
-    this.state.set('isRecording', false);
-    this.elements.recordButton.classList.remove('recording');
-    
-    // Add recorded notes to current track
-    // (Implementation depends on track selection logic)
-  }
-
-  handleExportJSON() {
-    const data = this.state.toJSON();
-    this.downloadFile(
-      JSON.stringify(data, null, 2),
-      `beatbuilder-${Date.now()}.json`,
-      'application/json'
-    );
-  }
-
-  handleExportMIDI() {
-    // Use ExportManager to generate MIDI
-    // (Existing implementation)
-  }
-
-  downloadFile(content, filename, mimeType) {
-    const blob = new Blob([content], { type: mimeType });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = filename;
-    link.click();
-    URL.revokeObjectURL(url);
-  }
-
-  updatePlayButton(playing) {
-    this.elements.playButton.textContent = playing ? '⏸ Pause' : '▶ Play';
-  }
-
-  updateBPMDisplay(bpm) {
-    this.elements.bpmInput.value = bpm;
-  }
-
-  updateStatusBar(beat) {
-    const bar = Math.floor(beat / 4) + 1;
-    const beatInBar = (beat % 4) + 1;
-    this.elements.statusBar.textContent = `Bar ${bar}, Beat ${beatInBar}`;
+  convertLeadPattern(pattern) {
+    // NEW: Convert lead notation to sequencer format
+    return {
+      id: pattern.id,
+      title: pattern.name,
+      type: 'lead',
+      pattern: [],
+      bpm: pattern.bpm
+    };
   }
 }
+
+// Initialize when DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+  window.beatBuilder = new BeatBuilderApp();
+  window.beatBuilder.init();
+});
