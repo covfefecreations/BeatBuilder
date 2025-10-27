@@ -541,12 +541,31 @@ class BeatBuilderApp {
 document.addEventListener('DOMContentLoaded', () => {
   console.log('📱 DOM ready, initializing BeatBuilder...');
 
+  // Check if Tone.js is loaded before proceeding
+  if (!window.Tone) {
+    console.error('❌ Tone.js not loaded - cannot initialize');
+    const statusBar = document.getElementById('status-bar');
+    if (statusBar) {
+      statusBar.textContent = 'Error: Audio library not loaded';
+      statusBar.style.color = '#ff4466';
+    }
+    alert('Failed to load audio library (Tone.js).\n\nPlease check your internet connection and refresh the page.');
+    return;
+  }
+
+  console.log('✅ Tone.js available:', Tone.version);
+
   // Create global app instance
   window.beatBuilder = new BeatBuilderApp();
 
   // Initialize the application
   window.beatBuilder.init().catch(error => {
     console.error('Fatal initialization error:', error);
+    const statusBar = document.getElementById('status-bar');
+    if (statusBar) {
+      statusBar.textContent = 'Initialization failed';
+      statusBar.style.color = '#ff4466';
+    }
   });
 
   // Set up cleanup on page unload
