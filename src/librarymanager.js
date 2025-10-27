@@ -1,242 +1,159 @@
-// librarymanager.js - Resource Library Manager
-// Loads and manages drum patterns, basslines, and chord progressions from the library
+// src/librarymanager.js - Pattern library loader with auto-discovery
 
-export default class LibraryManager {
+export class LibraryManager {
   constructor() {
-    this.drums = [];
-    this.bass = [];
-    this.chords = [];
-    this.melodies = [];
+    this.patterns = {
+      drums: [],
+      bass: [],
+      chords: [],
+      leads: []  // NEW category
+    };
     this.loaded = false;
   }
 
   /**
-   * Load all library resources
+   * Auto-discover and load all patterns from /library directory
+   * This replaces hardcoded pattern lists
    */
-  async loadAll() {
+  async loadAllPatterns() {
     try {
-      await Promise.all([
-        this.loadDrums(),
-        this.loadBass(),
-        this.loadChords()
-      ]);
-      this.loaded = true;
-      console.log("Library loaded:", {
-        drums: this.drums.length,
-        bass: this.bass.length,
-        chords: this.chords.length
-      });
-      return {
-        drums: this.drums,
-        bass: this.bass,
-        chords: this.chords
+      // Define pattern files for each category
+      const patternManifest = {
+        drums: [
+          // Original 4
+          'intro_build', 'chorus_syncopated', 'verse_steady', 'outro_minimal',
+          // New 10 from v0.3.0
+          'rising_steam', 'trap_stutter', 'solar_pulse', 'broken_clock',
+          'neon_rush', 'underflow', 'metro_snap', 'glass_hat',
+          'pulse_engine', 'lazy_groove'
+        ],
+        bass: [
+          // Original 8
+          'foundation', 'heartbeat', 'bounce', 'funk_foundation',
+          'walking_line', 'disco_drive', 'reggae_one_drop', 'anticipation',
+          // New 10 from v0.3.0
+          'warm_circuit', 'iron_root', 'glass_pulse', 'low_beacon',
+          'sunny_motion', 'syncopated_anchor', 'submarine', 'walking_groove',
+          'prismatic', 'hollow_root'
+        ],
+        chords: [
+          'pop_standard', 'minor_climb', 'jazzy_resolve',
+          'tension_builder', 'emotional_rollercoaster'
+        ],
+        leads: [
+          // NEW in v0.3.0
+          'neon_veins', 'sigh_motif', 'bolt', 'halo', 'glass_lead',
+          'wisp', 'driver', 'orbit', 'shard', 'quiet_cry'
+        ]
       };
+
+      // Load all patterns in parallel
+      const loadPromises = [];
+      
+      for (const [type, fileNames] of Object.entries(patternManifest)) {
+        for (const fileName of fileNames) {
+          const promise = fetch(`/library/${type}/${fileName}.json`)
+            .then(res => res.json())
+            .then(pattern => {
+              pattern.type = type; // Ensure type is set
+              this.patterns[type].push(pattern);
+            })
+            .catch(err => {
+              console.warn(`Failed to load pattern: ${type}/${fileName}`, err);
+              // Don't fail entire load if one pattern missing
+            });
+          
+          loadPromises.push(promise);
+        }
+      }
+
+      await Promise.all(loadPromises);
+      this.loaded = true;
+      
+      console.log('✅ Library loaded:', {
+        drums: this.patterns.drums.length,
+        bass: this.patterns.bass.length,
+        chords: this.patterns.chords.length,
+        leads: this.patterns.leads.length,
+        total: this.getAllPatterns().length
+      });
+
+      return this.patterns;
+
     } catch (error) {
-      console.error("Error loading library:", error);
+      console.error('❌ Failed to load library:', error);
       throw error;
     }
   }
 
-  /**
-   * Load drum patterns from library
-   */
-  async loadDrums() {
-    const drumPatterns = [
-      'intro_build',
-      'chorus_syncopated',
-      'verse_steady',
-      'outro_minimal'
+  // Get all patterns across all types
+  getAllPatterns() {
+    return [
+      ...this.patterns.drums,
+      ...this.patterns.bass,
+      ...this.patterns.chords,
+      ...this.patterns.leads
     ];
-
-    this.drums = await Promise.all(
-      drumPatterns.map(async (pattern) => {
-        try {
-          const response = await fetch(`library/drums/${pattern}.json`);
-          if (!response.ok) throw new Error(`Failed to load ${pattern}`);
-          return await response.json();
-        } catch (error) {
-          console.warn(`Could not load drum pattern ${pattern}:`, error);
-          return null;
-        }
-      })
-    );
-
-    this.drums = this.drums.filter(Boolean);
-    return this.drums;
   }
 
-  /**
-   * Load bass patterns from library
-   */
-  async loadBass() {
-    const bassPatterns = [
-      'foundation',
-      'heartbeat',
-      'bounce',
-      'funk_foundation',
-      'walking_line',
-      'disco_drive',
-      'reggae_one_drop',
-      'anticipation'
-    ];
-
-    this.bass = await Promise.all(
-      bassPatterns.map(async (pattern) => {
-        try {
-          const response = await fetch(`library/bass/${pattern}.json`);
-          if (!response.ok) throw new Error(`Failed to load ${pattern}`);
-          return await response.json();
-        } catch (error) {
-          console.warn(`Could not load bass pattern ${pattern}:`, error);
-          return null;
-        }
-      })
-    );
-
-    this.bass = this.bass.filter(Boolean);
-    return this.bass;
-  }
-
-  /**
-   * Load chord progressions from library
-   */
-  async loadChords() {
-    const chordProgressions = [
-      'pop_standard',
-      'minor_climb',
-      'jazzy_resolve',
-      'tension_builder',
-      'emotional_rollercoaster'
-    ];
-
-    this.chords = await Promise.all(
-      chordProgressions.map(async (pattern) => {
-        try {
-          const response = await fetch(`library/chords/${pattern}.json`);
-          if (!response.ok) throw new Error(`Failed to load ${pattern}`);
-          return await response.json();
-        } catch (error) {
-          console.warn(`Could not load chord progression ${pattern}:`, error);
-          return null;
-        }
-      })
-    );
-
-    this.chords = this.chords.filter(Boolean);
-    return this.chords;
-  }
-
-  /**
-   * Get pattern by ID
-   */
-  getPatternById(id) {
-    const allPatterns = [...this.drums, ...this.bass, ...this.chords, ...this.melodies];
-    return allPatterns.find(p => p.id === id);
-  }
-
-  /**
-   * Get patterns by type
-   */
+  // Get patterns by type
   getPatternsByType(type) {
-    switch(type.toLowerCase()) {
-      case 'drums':
-      case 'drum':
-        return this.drums;
-      case 'bass':
-        return this.bass;
-      case 'chords':
-      case 'chord':
-        return this.chords;
-      case 'melodies':
-      case 'melody':
-        return this.melodies;
-      default:
-        return [];
-    }
+    return this.patterns[type] || [];
   }
 
-  /**
-   * Get patterns by energy level
-   */
-  getPatternsByEnergy(energy) {
-    const allPatterns = [...this.drums, ...this.bass, ...this.chords];
-    return allPatterns.filter(p =>
-      p.energy && p.energy.toLowerCase().includes(energy.toLowerCase())
-    );
+  // Get specific pattern by ID
+  getPatternById(id) {
+    return this.getAllPatterns().find(p => p.id === id);
   }
 
-  /**
-   * Get patterns by genre
-   */
+  // Search patterns by text
+  searchPatterns(query) {
+    const lowerQuery = query.toLowerCase();
+    return this.getAllPatterns().filter(pattern => {
+      return (
+        pattern.name?.toLowerCase().includes(lowerQuery) ||
+        pattern.description?.toLowerCase().includes(lowerQuery) ||
+        pattern.genre?.some(g => g.toLowerCase().includes(lowerQuery)) ||
+        pattern.mood?.toLowerCase().includes(lowerQuery) ||
+        pattern.tags?.some(t => t.toLowerCase().includes(lowerQuery))
+      );
+    });
+  }
+
+  // Filter by energy level
+  getPatternsByEnergy(level) {
+    return this.getAllPatterns().filter(p => p.energy === level);
+  }
+
+  // Filter by genre
   getPatternsByGenre(genre) {
-    const allPatterns = [...this.drums, ...this.bass, ...this.chords];
-    return allPatterns.filter(p =>
-      p.genre && p.genre.toLowerCase().includes(genre.toLowerCase())
+    const lowerGenre = genre.toLowerCase();
+    return this.getAllPatterns().filter(p => 
+      p.genre?.some(g => g.toLowerCase().includes(lowerGenre))
     );
   }
 
-  /**
-   * Search patterns by keyword
-   */
-  searchPatterns(keyword) {
-    const allPatterns = [...this.drums, ...this.bass, ...this.chords, ...this.melodies];
-    const search = keyword.toLowerCase();
-
-    return allPatterns.filter(p =>
-      (p.name && p.name.toLowerCase().includes(search)) ||
-      (p.description && p.description.toLowerCase().includes(search)) ||
-      (p.genre && p.genre.toLowerCase().includes(search)) ||
-      (p.emotional_character && p.emotional_character.toLowerCase().includes(search))
-    );
-  }
-// Add to LibraryManager class
-
-async previewPattern(pattern, duration = 4) {
-  // Create temporary audio context for preview
-  const previewEngine = new AudioEngine();
-  
-  // Convert pattern to track format
-  const track = this.convertPatternToTrack(pattern);
-  
-  // Load and play for specified duration
-  await previewEngine.loadTracks([track]);
-  previewEngine.startPlayback();
-  
-  // Stop after duration
-  setTimeout(() => {
-    previewEngine.stopPlayback();
-  }, duration * 1000);
-}
-
-convertPatternToTrack(pattern) {
-  // Reuse adapter logic from main.js
-  // This should be abstracted into a shared utility
-  switch (pattern.type) {
-    case 'drums':
-      return this.convertDrumPattern(pattern);
-    // ... other cases
-  }
-}
-  /**
-   * Get random pattern by type
-   */
-  getRandomPattern(type) {
-    const patterns = this.getPatternsByType(type);
-    if (patterns.length === 0) return null;
-    return patterns[Math.floor(Math.random() * patterns.length)];
+  // Get random pattern (optionally filtered by type)
+  getRandomPattern(type = null) {
+    const pool = type ? this.getPatternsByType(type) : this.getAllPatterns();
+    return pool[Math.floor(Math.random() * pool.length)];
   }
 
-  /**
-   * Get library stats
-   */
+  // Get pattern statistics
   getStats() {
     return {
-      totalPatterns: this.drums.length + this.bass.length + this.chords.length + this.melodies.length,
-      drums: this.drums.length,
-      bass: this.bass.length,
-      chords: this.chords.length,
-      melodies: this.melodies.length,
-      loaded: this.loaded
+      total: this.getAllPatterns().length,
+      byType: {
+        drums: this.patterns.drums.length,
+        bass: this.patterns.bass.length,
+        chords: this.patterns.chords.length,
+        leads: this.patterns.leads.length
+      },
+      genres: [...new Set(this.getAllPatterns().flatMap(p => p.genre || []))],
+      bpmRange: {
+        min: Math.min(...this.getAllPatterns().map(p => p.bpm || Infinity)),
+        max: Math.max(...this.getAllPatterns().map(p => p.bpm || -Infinity))
+      }
     };
   }
 }
