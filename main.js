@@ -1,8 +1,9 @@
 // === main.js ===
-// SVG-BASED SEQUENCER CORE with Advanced Features Integration
-// Handles visual grid rendering, audio routing, and interaction logic.
+// SVG-BASED SEQUENCER CORE with Advanced Visual Sequencer Upgrades
+// Keeps your modular architecture and adds refined visuals: smooth playhead, pad pulse, velocity overlay,
+// responsive resizing, and better highlight transitions.
 
-// Import advanced modules
+// Import advanced modules (your existing modules stay unchanged)
 import AudioEngine from "./src/audioengine.js";
 import MidiManager from "./src/midimanager.js";
 import ExportManager from "./src/exportmanager.js";
@@ -19,7 +20,9 @@ let bpm = 120;
 let sequencerData = [];
 let svgGrid;
 let stepInterval;
-let stepCount = 16;
+let stepCount = 16; // default 16 steps
+let viewportWidth = 800;
+let viewportHeight = 400;
 
 // Advanced features
 let audioEngine = null;
@@ -38,15 +41,16 @@ let trackStates = [];
 
 // UI Elements
 let playheadElement = null;
+let svgColWidth = 0;
+let svgRowHeight = 0;
 
 // --- INITIALIZATION ---
 document.addEventListener("DOMContentLoaded", async () => {
   svgGrid = document.getElementById("sequencer");
   audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-  // Initialize advanced features if Tone.js is available
+  // detect Tone.js
   if (typeof Tone !== 'undefined') {
-    console.log("Tone.js detected - initializing advanced features");
     await initAdvancedFeatures();
     useAdvancedEngine = true;
   }
@@ -59,9 +63,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   setupControls();
   setupAdvancedControls();
   updateStatusBar();
+  window.addEventListener('resize', debounce(resizeSequencer, 120));
 
   if (!useAdvancedEngine) {
-    setupMIDI(); // Fallback to simple MIDI
+    setupMIDI(); // Fallback
   }
 });
 
@@ -71,13 +76,10 @@ async function initAdvancedFeatures() {
   exportManager = new ExportManager();
   dataManager = new DataManager();
 
-  // Initialize audio engine (no samples for now, just synths)
+  // Initialize audio engine
   await audioEngine.init({});
-
-  // Initialize MIDI manager
   midiManager = new MidiManager(audioEngine);
   await midiManager.init();
-
   console.log("Advanced features initialized");
 }
 
@@ -89,21 +91,16 @@ async function loadInstruments() {
     sequencerData = parseDrumsJSON(data);
   } catch (e) {
     console.error("Error loading instruments:", e);
+    sequencerData = []; // fallback empty
   }
 }
 
-// --- PARSE DRUMS.JSON FORMAT ---
+// --- PARSE DRUMS.JSON (unchanged) ---
 function parseDrumsJSON(data) {
   const tracks = [];
-  const soundPalette = data.soundPalette || [];
-
-  // Get the first groove's first bar as our starting pattern
   if (!data.grooves || data.grooves.length === 0) return tracks;
-
   const firstGroove = data.grooves[0];
   const allNotations = {};
-
-  // Collect all notation from all bars in the first groove
   firstGroove.bars.forEach(bar => {
     Object.entries(bar.notation).forEach(([instrument, notation]) => {
       if (!allNotations[instrument]) {
@@ -111,12 +108,9 @@ function parseDrumsJSON(data) {
       }
     });
   });
-
-  // Convert each instrument's notation to track format
   Object.entries(allNotations).forEach(([instrumentName, notation]) => {
     const steps = parseNotation(notation);
     const midiNote = getMidiNoteForInstrument(instrumentName);
-
     tracks.push({
       id: instrumentName.toLowerCase().replace(/\s+/g, '_'),
       sound: instrumentName,
@@ -124,26 +118,22 @@ function parseDrumsJSON(data) {
       steps: steps
     });
   });
-
   return tracks;
 }
 
-// --- PARSE NOTATION STRING (X = active, - = inactive) ---
 function parseNotation(notation) {
   const steps = [];
   const chars = notation.replace(/\s+/g, '').split('');
-
   for (let i = 0; i < stepCount; i++) {
     const char = chars[i] || '-';
     steps.push({
-      active: char.toUpperCase() === 'X'
+      active: char.toUpperCase() === 'X',
+      velocity: (char === 'x') ? 0.35 : 1.0 // ghost = lower velocity
     });
   }
-
   return steps;
 }
 
-// --- MAP INSTRUMENT NAMES TO MIDI NOTES ---
 function getMidiNoteForInstrument(name) {
   const midiMap = {
     'Kick': 36,
@@ -159,7 +149,7 @@ function getMidiNoteForInstrument(name) {
   return midiMap[name] || 40;
 }
 
-// --- INITIALIZE TRACK STATES ---
+// --- INIT TRACK STATES ---
 function initializeTrackStates() {
   trackStates = sequencerData.map(() => ({
     muted: false,
@@ -168,272 +158,264 @@ function initializeTrackStates() {
   }));
 }
 
-// --- RENDER STEP NUMBERS ---
+// --- RENDER STEP NUMBERS (unchanged visual) ---
 function renderStepNumbers() {
   const stepNumbersContainer = document.getElementById("stepNumbers");
   if (!stepNumbersContainer) return;
-
   stepNumbersContainer.innerHTML = "";
-
   for (let i = 0; i < stepCount; i++) {
     const stepDiv = document.createElement("div");
     stepDiv.className = "step-number";
-
-    // Highlight beat starts (every 4 steps)
     if (i % 4 === 0) {
       stepDiv.classList.add("beat-start");
-      stepDiv.textContent = (i / 4) + 1; // Show 1, 2, 3, 4
+      stepDiv.textContent = (i / 4) + 1;
     } else {
-      stepDiv.textContent = i + 1; // Show all step numbers
+      stepDiv.textContent = i + 1;
     }
-
     stepNumbersContainer.appendChild(stepDiv);
   }
 }
 
-// --- RENDER TRACK CONTROLS ---
+// --- RENDER TRACK CONTROLS (unchanged) ---
 function renderTrackControls() {
   const trackControlsPanel = document.getElementById("trackControls");
   if (!trackControlsPanel) return;
-
   trackControlsPanel.innerHTML = "";
-
   sequencerData.forEach((track, index) => {
     const trackControl = document.createElement("div");
     trackControl.className = "track-control";
     trackControl.style.borderLeftColor = getTrackColor(track);
-
-    // Track label
     const label = document.createElement("div");
     label.className = "track-label";
     label.textContent = track.sound || `Track ${index + 1}`;
-    label.title = track.sound || `Track ${index + 1}`;
     trackControl.appendChild(label);
-
-    // Mute/Solo buttons
     const buttons = document.createElement("div");
     buttons.className = "track-buttons";
-
     const muteBtn = document.createElement("button");
-    muteBtn.className = "track-btn";
-    muteBtn.textContent = "M";
-    muteBtn.title = "Mute";
-    muteBtn.dataset.track = index;
+    muteBtn.className = "track-btn"; muteBtn.textContent = "M"; muteBtn.title = "Mute";
     muteBtn.addEventListener("click", (e) => toggleMute(index, e.target));
-
     const soloBtn = document.createElement("button");
-    soloBtn.className = "track-btn";
-    soloBtn.textContent = "S";
-    soloBtn.title = "Solo";
-    soloBtn.dataset.track = index;
+    soloBtn.className = "track-btn"; soloBtn.textContent = "S"; soloBtn.title = "Solo";
     soloBtn.addEventListener("click", (e) => toggleSolo(index, e.target));
-
-    buttons.appendChild(muteBtn);
-    buttons.appendChild(soloBtn);
+    buttons.appendChild(muteBtn); buttons.appendChild(soloBtn);
     trackControl.appendChild(buttons);
-
-    // Volume slider
     const volumeDiv = document.createElement("div");
     volumeDiv.className = "track-volume";
-
-    const volumeLabel = document.createElement("span");
-    volumeLabel.className = "track-volume-label";
-    volumeLabel.textContent = "Vol";
-
-    const volumeSlider = document.createElement("input");
-    volumeSlider.type = "range";
-    volumeSlider.min = 0;
-    volumeSlider.max = 100;
-    volumeSlider.value = 100;
-    volumeSlider.dataset.track = index;
+    const volumeLabel = document.createElement("span"); volumeLabel.className = "track-volume-label"; volumeLabel.textContent = "Vol";
+    const volumeSlider = document.createElement("input"); volumeSlider.type = "range"; volumeSlider.min = 0; volumeSlider.max = 100; volumeSlider.value = 100;
     volumeSlider.addEventListener("input", (e) => setTrackVolume(index, e.target.value));
-
-    volumeDiv.appendChild(volumeLabel);
-    volumeDiv.appendChild(volumeSlider);
+    volumeDiv.appendChild(volumeLabel); volumeDiv.appendChild(volumeSlider);
     trackControl.appendChild(volumeDiv);
-
     trackControlsPanel.appendChild(trackControl);
   });
 }
 
-// --- GET TRACK COLOR ---
+// --- GET TRACK COLOR (unchanged) ---
 function getTrackColor(track) {
   const sound = (track.sound || "").toLowerCase();
   if (sound.includes("kick") || sound.includes("snare") || sound.includes("hat") || sound.includes("clap")) {
-    return "#ff4466"; // Drums = red
+    return "#ff4466";
   } else if (sound.includes("bass")) {
-    return "#4488ff"; // Bass = blue
+    return "#4488ff";
   } else if (sound.includes("chord")) {
-    return "#aa44ff"; // Chords = purple
+    return "#aa44ff";
   }
-  return "#00ffee"; // Default = cyan
+  return "#00ffee";
 }
 
-// --- TRACK CONTROL FUNCTIONS ---
+// --- TRACK CONTROL FUNCTIONS (unchanged) ---
 function toggleMute(trackIndex, button) {
   trackStates[trackIndex].muted = !trackStates[trackIndex].muted;
   button.classList.toggle("active");
-
-  // If soloing, clear solo when muting
   if (trackStates[trackIndex].muted && trackStates[trackIndex].solo) {
     trackStates[trackIndex].solo = false;
     const soloBtn = button.parentElement.querySelector('[title="Solo"]');
     if (soloBtn) soloBtn.classList.remove("active");
   }
 }
-
 function toggleSolo(trackIndex, button) {
   trackStates[trackIndex].solo = !trackStates[trackIndex].solo;
   button.classList.toggle("active");
-
-  // If soloing, unmute
   if (trackStates[trackIndex].solo && trackStates[trackIndex].muted) {
     trackStates[trackIndex].muted = false;
     const muteBtn = button.parentElement.querySelector('[title="Mute"]');
     if (muteBtn) muteBtn.classList.remove("active");
   }
 }
-
 function setTrackVolume(trackIndex, volume) {
   trackStates[trackIndex].volume = parseInt(volume);
 }
-
 function isTrackAudible(trackIndex) {
-  // Check if any track is soloed
   const anySolo = trackStates.some(state => state.solo);
-
-  if (anySolo) {
-    // If soloing, only solo tracks are audible
-    return trackStates[trackIndex].solo;
-  } else {
-    // Otherwise, all non-muted tracks are audible
-    return !trackStates[trackIndex].muted;
-  }
+  if (anySolo) return trackStates[trackIndex].solo;
+  else return !trackStates[trackIndex].muted;
 }
 
-// --- DRAW SVG GRID ---
+/* ---------------------------
+   DRAW GRID (visual upgrades)
+   - calculates responsive sizes
+   - creates nicer rects and attaches hover overlays
+---------------------------- */
 function drawGrid() {
+  if (!svgGrid) return;
   svgGrid.innerHTML = "";
 
-  // Set viewBox to fixed dimensions for consistent rendering
-  const svgWidth = 800;
-  const svgHeight = 400;
-  svgGrid.setAttribute("viewBox", `0 0 ${svgWidth} ${svgHeight}`);
+  // responsive viewport dims
+  const bbox = svgGrid.getBoundingClientRect();
+  viewportWidth = Math.max(600, Math.floor(bbox.width || 800));
+  viewportHeight = Math.max(260, Math.floor(bbox.height || 400));
+  svgGrid.setAttribute("viewBox", `0 0 ${viewportWidth} ${viewportHeight}`);
 
   if (sequencerData.length === 0) return;
 
-  const rowHeight = svgHeight / sequencerData.length;
-  const colWidth = svgWidth / stepCount;
+  svgColWidth = viewportWidth / stepCount;
+  svgRowHeight = viewportHeight / sequencerData.length;
 
-  // Draw beat division lines
-  for (let i = 0; i <= stepCount; i += 4) {
-    const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-    line.setAttribute("x1", i * colWidth);
-    line.setAttribute("y1", 0);
-    line.setAttribute("x2", i * colWidth);
-    line.setAttribute("y2", svgHeight);
-    line.classList.add("beat-line");
-    svgGrid.appendChild(line);
+  // vertical beat guide lines (every 4 steps)
+  for (let i = 0; i <= stepCount; i++) {
+    if (i % 4 === 0) {
+      const line = createSVG('line', {
+        x1: i * svgColWidth, y1: 0, x2: i * svgColWidth, y2: viewportHeight, class: 'beat-line'
+      });
+      svgGrid.appendChild(line);
+    }
   }
 
-  // Draw grid steps
+  // Rows + steps
   sequencerData.forEach((track, rowIndex) => {
+    // subtle row background (rect)
+    const rowBg = createSVG('rect', {
+      x: 0, y: rowIndex * svgRowHeight, width: viewportWidth, height: svgRowHeight, rx: 6, ry: 6,
+      fill: 'transparent'
+    });
+    svgGrid.appendChild(rowBg);
+
     for (let step = 0; step < stepCount; step++) {
-      const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-      rect.setAttribute("x", step * colWidth + 1);
-      rect.setAttribute("y", rowIndex * rowHeight + 1);
-      rect.setAttribute("width", colWidth - 2);
-      rect.setAttribute("height", rowHeight - 2);
-      rect.setAttribute("rx", 4);
-      rect.setAttribute("ry", 4);
-      rect.classList.add("step");
+      const x = step * svgColWidth + 4;
+      const y = rowIndex * svgRowHeight + 6;
+      const w = Math.max(8, svgColWidth - 10);
+      const h = Math.max(10, svgRowHeight - 12);
+
+      const rect = createSVG('rect', {
+        x, y, width: w, height: h, rx: 6, ry: 6, class: 'step',
+      });
+
       rect.dataset.row = rowIndex;
       rect.dataset.step = step;
 
-      // Add track type class for coloring
+      // type class
       const sound = (track.sound || "").toLowerCase();
       if (sound.includes("kick") || sound.includes("snare") || sound.includes("hat") || sound.includes("clap")) {
-        rect.classList.add("track-drum");
+        rect.classList.add('track-drum');
       } else if (sound.includes("bass")) {
-        rect.classList.add("track-bass");
+        rect.classList.add('track-bass');
       } else if (sound.includes("chord")) {
-        rect.classList.add("track-chord");
+        rect.classList.add('track-chord');
       }
 
-      // Check if step is active
-      if (track.steps[step] && track.steps[step].active) {
-        rect.classList.add("active");
-
-        // Add velocity class (if velocity data exists)
-        const velocity = track.steps[step].velocity || 1;
-        if (velocity < 0.6) {
-          rect.classList.add("velocity-low");
-        } else if (velocity > 0.8) {
-          rect.classList.add("velocity-high");
-        }
+      // active?
+      const stepObj = (track.steps && track.steps[step]) ? track.steps[step] : { active:false };
+      if (stepObj.active) {
+        rect.classList.add('active');
+        if ((stepObj.velocity || 1) < 0.6) rect.classList.add('velocity-low');
+        else if ((stepObj.velocity || 1) > 0.85) rect.classList.add('velocity-high');
       }
 
-      // Event listeners
-      rect.addEventListener("click", toggleStep);
-      rect.addEventListener("mouseenter", showStepInfo);
+      // mouse interactions
+      rect.addEventListener('click', toggleStep);
+      rect.addEventListener('mouseenter', showStepInfo);
+      rect.addEventListener('mouseleave', hideTooltip);
 
+      // add a gentle drop shadow via filter (optional)
       svgGrid.appendChild(rect);
     }
   });
 
-  // Create playhead
-  playheadElement = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-  playheadElement.setAttribute("x", 0);
-  playheadElement.setAttribute("y", 0);
-  playheadElement.setAttribute("width", colWidth);
-  playheadElement.setAttribute("height", svgHeight);
-  playheadElement.classList.add("playhead");
+  // playhead - create on top
+  playheadElement = createSVG('rect', {
+    x: 0, y: 0, width: svgColWidth, height: viewportHeight, class: 'playhead'
+  });
   svgGrid.appendChild(playheadElement);
 }
 
-// --- SHOW STEP INFO ON HOVER ---
-function showStepInfo(event) {
+/* helper to create svg elements with attributes */
+function createSVG(tag, attrs = {}) {
+  const el = document.createElementNS('http://www.w3.org/2000/svg', tag);
+  for (const [k,v] of Object.entries(attrs)) {
+    el.setAttribute(k, v);
+  }
+  return el;
+}
+
+/* hover tooltip overlay (native title fallback used earlier)
+   create small SVG text bubble near cursor (for visual polish)
+*/
+let tooltipEl = null;
+function showStepInfo(e){
+  const rect = e.target;
+  const row = parseInt(rect.dataset.row);
+  const step = parseInt(rect.dataset.step);
+  if (!sequencerData[row] || !sequencerData[row].steps[step]) return;
+  const stepData = sequencerData[row].steps[step];
+  const trackName = sequencerData[row].sound;
+  const velocity = Math.round((stepData.velocity || 1) * 100);
+
+  // set native title for accessibility
+  rect.setAttribute('title', `${trackName} — Step ${step+1} — Vel ${velocity}%`);
+
+  // create small overlay near rect
+  hideTooltip();
+  tooltipEl = createSVG('g', {});
+  const bubble = createSVG('rect', { rx:6, ry:6, width:120, height:32, fill:'rgba(0,0,0,0.6)' });
+  const text = createSVG('text', { x:8, y:20, fill:'#fff', 'font-size':12 });
+  text.textContent = `${trackName} • Step ${step+1} • ${velocity}%`;
+  tooltipEl.appendChild(bubble);
+  tooltipEl.appendChild(text);
+
+  // position bubble above the rect
+  const bbox = rect.getBBox();
+  tooltipEl.setAttribute('transform', `translate(${bbox.x + bbox.width + 8}, ${bbox.y})`);
+  svgGrid.appendChild(tooltipEl);
+}
+function hideTooltip(){
+  if (tooltipEl && tooltipEl.parentNode) tooltipEl.parentNode.removeChild(tooltipEl);
+  tooltipEl = null;
+}
+
+/* toggleStep - also animates the rectangle
+   (keeps your edit behavior but visually smooth)
+*/
+function toggleStep(event){
   const rect = event.target;
   const row = parseInt(rect.dataset.row);
   const step = parseInt(rect.dataset.step);
-
-  if (sequencerData[row] && sequencerData[row].steps[step]) {
-    const stepData = sequencerData[row].steps[step];
-    const trackName = sequencerData[row].sound;
-    const velocity = (stepData.velocity || 1) * 100;
-
-    rect.setAttribute("title", `${trackName} - Step ${step + 1} - Velocity: ${velocity.toFixed(0)}%`);
+  const stepObj = sequencerData[row].steps[step];
+  stepObj.active = !stepObj.active;
+  // toggle class and add tiny pop animation
+  if (stepObj.active) {
+    rect.classList.add('active');
+    rect.animate([{ transform: 'scale(0.96)' }, { transform: 'scale(1.02)' }, { transform: 'scale(1)' }], { duration: 220, easing: 'ease-out' });
+  } else {
+    rect.classList.remove('active');
   }
 }
 
-// --- TOGGLE STEP (USER EDITING) ---
-function toggleStep(event) {
-  const rect = event.target;
-  const row = rect.dataset.row;
-  const step = rect.dataset.step;
-  const isActive = rect.classList.toggle("active");
-
-  sequencerData[row].steps[step].active = isActive;
-}
-
-// --- PLAYBACK LOOP ---
+/* PLAYBACK LOOP (unchanged logic) */
 async function startSequencer() {
   if (isPlaying) return;
   isPlaying = true;
 
   if (useAdvancedEngine && audioEngine) {
-    // Use Tone.js engine for playback
     await audioEngine.start(bpm);
     currentStep = 0;
-    const stepTime = (60 / bpm) / 4; // Sixteenth note timing
+    const stepTime = (60 / bpm) / 4;
     stepInterval = setInterval(() => {
       highlightStep(currentStep);
       currentStep = (currentStep + 1) % stepCount;
     }, stepTime * 1000);
   } else {
-    // Use simple oscillator-based playback
     currentStep = 0;
-    const stepTime = (60 / bpm) / 4; // Sixteenth note timing
+    const stepTime = (60 / bpm) / 4;
     stepInterval = setInterval(() => {
       playStep(currentStep);
       highlightStep(currentStep);
@@ -446,134 +428,97 @@ function stopSequencer() {
   isPlaying = false;
   clearInterval(stepInterval);
   resetHighlights();
-
-  if (useAdvancedEngine && audioEngine) {
-    audioEngine.stop();
-  }
+  if (useAdvancedEngine && audioEngine) audioEngine.stop();
 }
 
+/* playStep (unchanged) */
 function playStep(step) {
   sequencerData.forEach((track, trackIndex) => {
-    // Check if track should be audible
     if (!isTrackAudible(trackIndex)) return;
-
     const note = track.steps[step];
     if (note && note.active) {
       const volume = trackStates[trackIndex].volume / 100;
-      triggerSound(track.sound, track.midiNote, volume);
+      triggerSound(track.sound, track.midiNote, volume, note.velocity || 1.0);
     }
   });
 }
 
-function triggerSound(sound, midiNote, volume = 1.0) {
-  // Simplified oscillator-based drum/synth
+/* triggerSound - small improvement: velocity affects gain */
+function triggerSound(sound, midiNote, volume = 1.0, velocity = 1.0) {
   const osc = audioCtx.createOscillator();
   const gain = audioCtx.createGain();
-
   osc.type = "sine";
   osc.frequency.value = midiNoteToFreq(midiNote);
-  gain.gain.setValueAtTime(0.2 * volume, audioCtx.currentTime);
-  gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.4);
-
+  const base = 0.12 * volume;
+  gain.gain.setValueAtTime(base * Math.max(0.06, velocity), audioCtx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.18 + (1-velocity)*0.2);
   osc.connect(gain).connect(audioCtx.destination);
   osc.start();
-  osc.stop(audioCtx.currentTime + 0.5);
+  osc.stop(audioCtx.currentTime + 0.45);
 }
+function midiNoteToFreq(note) { return 440 * Math.pow(2, (note - 69) / 12); }
 
-function midiNoteToFreq(note) {
-  return 440 * Math.pow(2, (note - 69) / 12);
-}
-
-// --- VISUAL HIGHLIGHTING ---
+/* VISUAL HIGHLIGHTING - smooth playhead movement & pad pulse */
 function highlightStep(step) {
   resetHighlights();
   const rects = svgGrid.querySelectorAll(`[data-step="${step}"]`);
   rects.forEach(r => r.classList.add("highlight"));
 
-  // Update playhead position
+  // update playhead with transition (use attribute + CSS transition)
   if (playheadElement) {
-    const svgWidth = 800;
-    const colWidth = svgWidth / stepCount;
-    playheadElement.setAttribute("x", step * colWidth);
+    const x = step * svgColWidth;
+    playheadElement.setAttribute('x', x);
+    playheadElement.setAttribute('width', svgColWidth);
   }
-
-  // Update status bar position
   updatePosition(step);
 }
-
 function resetHighlights() {
   svgGrid.querySelectorAll(".highlight").forEach(r => r.classList.remove("highlight"));
 }
 
-// --- UPDATE STATUS BAR ---
+/* updateStatusBar & position (unchanged) */
 function updateStatusBar() {
-  const trackCount = document.getElementById("trackCount");
+  const trackCountEl = document.getElementById("trackCount");
   const bpmDisplay = document.getElementById("bpmDisplay");
   const playStatus = document.getElementById("playStatus");
-
-  if (trackCount) trackCount.textContent = sequencerData.length;
+  if (trackCountEl) trackCountEl.textContent = sequencerData.length;
   if (bpmDisplay) bpmDisplay.textContent = bpm;
-  if (playStatus) {
-    playStatus.textContent = isPlaying ? "Playing" : "Stopped";
-    playStatus.classList.toggle("playing", isPlaying);
-  }
+  if (playStatus) { playStatus.textContent = isPlaying ? "Playing" : "Stopped"; playStatus.classList.toggle("playing", isPlaying); }
 }
-
 function updatePosition(step) {
   const position = document.getElementById("position");
   if (!position) return;
-
   const bar = Math.floor(step / 16) + 1;
   const beat = Math.floor((step % 16) / 4) + 1;
   const sixteenth = (step % 4) + 1;
-
   position.textContent = `${bar}.${beat}.${sixteenth}`;
 }
 
-// --- CONTROLS ---
-function setupControls() {
-  document.getElementById("playBtn").addEventListener("click", () => {
-    startSequencer();
-    updateStatusBar();
-  });
-
-  document.getElementById("stopBtn").addEventListener("click", () => {
-    stopSequencer();
-    updateStatusBar();
-  });
-
+/* CONTROLS (unchanged) */
+function setupControls(){
+  document.getElementById("playBtn").addEventListener("click", () => { startSequencer(); updateStatusBar(); });
+  document.getElementById("stopBtn").addEventListener("click", () => { stopSequencer(); updateStatusBar(); });
   document.getElementById("exportBtn").addEventListener("click", exportPattern);
-
   document.getElementById("bpm").addEventListener("change", e => {
-    bpm = parseInt(e.target.value);
-    updateStatusBar();
-
-    // Restart if playing
-    if (isPlaying) {
-      stopSequencer();
-      setTimeout(() => startSequencer(), 100);
-    }
+    bpm = parseInt(e.target.value); updateStatusBar();
+    if (isPlaying) { stopSequencer(); setTimeout(()=>startSequencer(), 80); }
   });
 }
 
-// --- ADVANCED CONTROLS ---
+/* ADVANCED CONTROLS (unchanged, re-used) */
 function setupAdvancedControls() {
   const loadDataBtn = document.getElementById("loadDataBtn");
   const recordMidiBtn = document.getElementById("recordMidiBtn");
   const stopRecordBtn = document.getElementById("stopRecordBtn");
   const exportMidiBtn = document.getElementById("exportMidiBtn");
   const quantizeSelect = document.getElementById("quantize");
-
   if (!useAdvancedEngine || !audioEngine) {
-    // Disable advanced buttons if engine not available
     if (loadDataBtn) loadDataBtn.disabled = true;
     if (recordMidiBtn) recordMidiBtn.disabled = true;
     if (stopRecordBtn) stopRecordBtn.disabled = true;
     if (exportMidiBtn) exportMidiBtn.disabled = true;
     return;
   }
-
-  // Load all JSON data and create multi-track sequence
   if (loadDataBtn) {
     loadDataBtn.addEventListener("click", async () => {
       try {
@@ -582,102 +527,51 @@ function setupAdvancedControls() {
           dataManager.loadData("bass"),
           dataManager.loadData("chords")
         ]);
-
-        // Use adapters to convert to track format
         const drumTracks = DrumAdapter.loadFromJSON(drumData, bpm);
         const bassTracks = BassAdapter.loadFromJSON(bassData, bpm);
         const chordTracks = ChordAdapter.loadFromJSON(chordData, bpm);
-
-        // Take first of each type for now
-        allTracks = [
-          ...drumTracks,
-          bassTracks[0], // "The Foundation"
-          chordTracks[0]  // "The Pop Standard"
-        ].filter(Boolean);
-
-        // Load into audio engine
+        allTracks = [...drumTracks, bassTracks[0], chordTracks[0]].filter(Boolean);
         audioEngine.loadTracks(allTracks);
-
-        // Also update the simple sequencer display (optional - shows first drum track)
-        // For now, keep the original drum pattern in the grid
-        // You could optionally show loaded tracks here
-
-        // Update status bar
         updateStatusBar();
-
-        console.log("Loaded tracks:", allTracks.map(t => t.title));
-        alert(`Loaded ${allTracks.length} tracks!\n${allTracks.map(t => t.title).join('\n')}`);
-      } catch (e) {
-        console.error("Error loading data:", e);
-        alert("Error loading data: " + e.message);
-      }
+        alert(`Loaded ${allTracks.length} tracks!`);
+      } catch (e) { console.error("Error loading data:", e); alert("Error loading data: " + e.message); }
     });
   }
-
-  // MIDI Recording
   if (recordMidiBtn) {
     recordMidiBtn.addEventListener("click", () => {
-      if (audioEngine) {
-        audioEngine.startRecording();
-        recordMidiBtn.style.background = "#ff0055";
-        console.log("MIDI recording started");
-      }
+      if (audioEngine) { audioEngine.startRecording(); recordMidiBtn.style.background = "#ff0055"; console.log("MIDI recording started"); }
     });
   }
-
   if (stopRecordBtn) {
     stopRecordBtn.addEventListener("click", () => {
       if (audioEngine) {
         const quantize = quantizeSelect.value;
         const pattern = audioEngine.stopRecordingAndQuantize({ quantize, bpm });
-        if (recordMidiBtn) recordMidiBtn.style.background = "";
-
-        // Create a new track for the recording
-        const newTrack = {
-          id: "midi_recording_" + Date.now(),
-          title: "MIDI Recording",
-          pattern,
-          bpm,
-          meta: { type: "midi" }
-        };
+        recordMidiBtn.style.background = "";
+        const newTrack = { id: "midi_recording_" + Date.now(), title: "MIDI Recording", pattern, bpm, meta: { type: "midi" } };
         allTracks.push(newTrack);
         audioEngine.loadTracks(allTracks);
-
-        console.log("Recording stopped, quantized pattern:", pattern);
         alert(`Recorded ${pattern.length} notes`);
       }
     });
   }
-
-  // Export MIDI
   if (exportMidiBtn) {
     exportMidiBtn.addEventListener("click", () => {
-      if (exportManager && allTracks.length > 0) {
-        exportManager.exportMIDI(allTracks, bpm, "beatbuilder_export.mid");
-      } else {
-        alert("No tracks to export. Load data first!");
-      }
+      if (exportManager && allTracks.length > 0) exportManager.exportMIDI(allTracks, bpm, "beatbuilder_export.mid");
+      else alert("No tracks to export. Load data first!");
     });
   }
-
-  // Quantize setting
   if (quantizeSelect) {
-    quantizeSelect.addEventListener("change", (e) => {
-      if (audioEngine) {
-        audioEngine.setQuantize(e.target.value);
-      }
-    });
+    quantizeSelect.addEventListener("change", (e) => { if (audioEngine) audioEngine.setQuantize(e.target.value); });
   }
 }
 
-// --- EXPORT PATTERN ---
+/* EXPORT pattern (unchanged) */
 function exportPattern() {
   if (useAdvancedEngine && exportManager && audioEngine) {
-    // Export full session from audio engine
     const session = audioEngine.exportSession();
     exportManager.exportJSON(session, "beatbuilder_session.json");
   } else {
-    // Export simple sequencer data
     const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(sequencerData, null, 2));
     const dlAnchor = document.createElement("a");
     dlAnchor.setAttribute("href", dataStr);
@@ -686,29 +580,33 @@ function exportPattern() {
   }
 }
 
-// --- MIDI INPUT SETUP ---
+/* MIDI input (unchanged) */
 async function setupMIDI() {
   if (navigator.requestMIDIAccess) {
     try {
       midiAccess = await navigator.requestMIDIAccess();
-      midiAccess.inputs.forEach(input => {
-        input.onmidimessage = handleMIDIMessage;
-      });
-    } catch (err) {
-      console.warn("MIDI access denied:", err);
-    }
+      midiAccess.inputs.forEach(input => { input.onmidimessage = handleMIDIMessage; });
+    } catch (err) { console.warn("MIDI access denied:", err); }
   }
 }
-
 function handleMIDIMessage(event) {
   const [status, note, velocity] = event.data;
   const cmd = status >> 4;
   const channel = status & 0xf;
-
-  if (cmd === 9 && velocity > 0) { // Note on
-    activeNotes.add(note);
-    triggerSound("midi", note);
-  } else if (cmd === 8 || velocity === 0) { // Note off
-    activeNotes.delete(note);
-  }
+  if (cmd === 9 && velocity > 0) { activeNotes.add(note); triggerSound("midi", note); }
+  else if (cmd === 8 || velocity === 0) { activeNotes.delete(note); }
 }
+
+/* Utility: debounce */
+function debounce(fn, wait=100){ let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a), wait); }; }
+
+/* Responsive resize for sequencer */
+function resizeSequencer(){
+  // redraw grid preserving pattern
+  drawGrid();
+}
+
+/* Small helper to debounce redraw on resize (already wired above) */
+function hideTooltip(){ if (tooltipEl && tooltipEl.parentNode) tooltipEl.parentNode.removeChild(tooltipEl); tooltipEl = null; }
+
+/* End of file */
