@@ -13,28 +13,20 @@
     <header class="toolbar">
       <div class="logo">🎵 BeatBuilder</div>
       
-      <div class="transport-controls">
-        <button id="play-button" class="btn btn-primary">▶ Play</button>
-        <button id="stop-button" class="btn">⏹ Stop</button>
-        <input id="bpm-input" type="number" value="120" min="60" max="200" />
-        <label>BPM</label>
-      </div>
-
       <div class="toolbar-actions">
-        <button id="library-toggle" class="btn btn-accent">📚 Library</button>
-        <button id="export-json" class="btn">💾 JSON</button>
-        <button id="export-midi" class="btn">🎹 MIDI</button>
+        <!-- The library toggle is removed as the panel is now fixed -->
+        <!-- The export buttons are moved to the footer -->
       </div>
     </header>
 
     <!-- Main Content Area -->
 	    <div class="main-content">
 	      <!-- The sequencer-wrapper will be a flex container to hold the track controls and the sequencer area side-by-side -->
-      
-      <!-- Library Panel (Slides in from left) -->
-      <aside id="library-panel" class="library-panel">
-        <!-- PatternSelector will render here -->
-      </aside>
+	      
+	      <!-- Library Panel (Fixed on right) -->
+	      <aside id="library-panel">
+	        <!-- PatternSelector will render here -->
+	      </aside>
 
 	      <!-- Sequencer Area -->
 	      <div class="sequencer-wrapper">
@@ -50,10 +42,17 @@
 
     </div>
 
-    <!-- Status Bar -->
-    <footer class="status-bar">
-      <span id="status-bar">Ready</span>
-      <span id="track-count">0 tracks</span>
+    <!-- Footer (Controls) -->
+    <footer>
+      <div class="controls">
+        <button id="play-button">▶ Play</button>
+        <button id="stop-button">⏹ Stop</button>
+        <input id="bpm-input" type="number" min="60" max="200" value="120"> BPM
+      </div>
+      <div class="exports">
+        <button id="export-json">Export JSON</button>
+        <button id="export-midi">Export MIDI</button>
+      </div>
     </footer>
 
   </div>
