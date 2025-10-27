@@ -56,6 +56,7 @@ class BeatBuilderApp {
   async init() {
     try {
       console.log('🚀 Initializing BeatBuilder v2.0...');
+      this.showStatus('Initializing...');
 
       // Step 1: Verify DOM elements exist
       this.verifyDOMElements();
@@ -87,7 +88,7 @@ class BeatBuilderApp {
       // Mark as initialized
       this.isInitialized = true;
       console.log('✅ BeatBuilder initialized successfully');
-      this.uiController.updateStatus('Ready');
+      this.showStatus('Ready - Tap ▤ to browse patterns');
 
     } catch (error) {
       console.error('❌ Initialization failed:', error);
@@ -125,10 +126,30 @@ class BeatBuilderApp {
    * Initialize the Audio Engine with synthesizers
    */
   async initializeAudioEngine() {
-    // Initialize with empty samples object - synths will be created
-    // Drum samples can be added later if needed
-    await this.audioEngine.init({});
-    console.log('✅ Audio Engine initialized');
+    this.showStatus('Loading audio engine...');
+    try {
+      // Initialize with empty samples object - synths will be created
+      // Drum samples can be added later if needed
+      await this.audioEngine.init({});
+      console.log('✅ Audio Engine initialized');
+    } catch (error) {
+      console.error('❌ Audio Engine initialization failed:', error);
+      this.showStatus('Audio engine failed - check console');
+      throw error;
+    }
+  }
+
+  /**
+   * Show status message (works even before UI Controller is ready)
+   */
+  showStatus(message) {
+    const statusBar = document.getElementById('status-bar');
+    if (statusBar) {
+      statusBar.textContent = message;
+    }
+    if (this.uiController) {
+      this.uiController.updateStatus(message);
+    }
   }
 
   /**

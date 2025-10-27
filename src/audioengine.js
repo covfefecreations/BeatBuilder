@@ -23,27 +23,39 @@ export class AudioEngine {
   }
 
   async init(samples = {}) {
-    // samples: { Kick: 'url', Snare: 'url', ... }
-    // create players for drums
-    for (const [name, url] of Object.entries(samples)) {
-      const p = new Tone.Player(url).toDestination();
-      this.players[name] = p;
-      // ensure loaded
-      try { await p.load(); } catch (e) { console.warn("Sample load failed", name, e); }
+    try {
+      // Ensure Tone.js context is created
+      if (!window.Tone) {
+        throw new Error('Tone.js not loaded');
+      }
+
+      // samples: { Kick: 'url', Snare: 'url', ... }
+      // create players for drums
+      for (const [name, url] of Object.entries(samples)) {
+        const p = new Tone.Player(url).toDestination();
+        this.players[name] = p;
+        // ensure loaded
+        try { await p.load(); } catch (e) { console.warn("Sample load failed", name, e); }
+      }
+
+      // create simple synths for bass+chords (replaceable)
+      this.synths["bass"] = new Tone.MonoSynth({
+        oscillator: { type: "sawtooth" },
+        filter: { Q: 2, type: "lowpass", rolloff: -24 },
+        envelope: { attack: 0.005, decay: 0.2, sustain: 0.6, release: 0.8 }
+      }).toDestination();
+
+      this.synths["chord"] = new Tone.PolySynth(Tone.Synth, {
+        maxPolyphony: 6,
+        oscillator: { type: "triangle" },
+        envelope: { attack: 0.02, decay: 0.3, sustain: 0.7, release: 1.2 }
+      }).toDestination();
+
+      console.log('✅ Audio Engine synths created');
+    } catch (error) {
+      console.error('❌ Audio Engine init failed:', error);
+      throw error;
     }
-
-    // create simple synths for bass+chords (replaceable)
-    this.synths["bass"] = new Tone.MonoSynth({
-      oscillator: { type: "sawtooth" },
-      filter: { Q: 2, type: "lowpass", rolloff: -24 },
-      envelope: { attack: 0.005, decay: 0.2, sustain: 0.6, release: 0.8 }
-    }).toDestination();
-
-    this.synths["chord"] = new Tone.PolySynth(Tone.Synth, {
-      maxPolyphony: 6,
-      oscillator: { type: "triangle" },
-      envelope: { attack: 0.02, decay: 0.3, sustain: 0.7, release: 1.2 }
-    }).toDestination();
   }
 
   // load unified tracks (from adapters). Tracks array items:
