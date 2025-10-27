@@ -66,10 +66,23 @@ body{
   margin-right: 20px;
 }
 
-.transport-controls, .toolbar-actions {
+.transport-controls, .toolbar-actions, .status-info {
   display: flex;
   gap: 10px;
   align-items: center;
+}
+
+.status-info {
+  font-size: 14px;
+  color: var(--subtext);
+  gap: 20px;
+  margin-left: auto; /* Push it to the center-right */
+  margin-right: 20px; /* Space before toolbar-actions */
+}
+
+.status-info #status-bar {
+  color: var(--text);
+  font-weight: 600;
 }
 
 /* General Button Styling Refinement */
@@ -373,24 +386,7 @@ footer button:hover {
   background: #333;
 }
 
-/* --- Status Bar --- */
-/* The status bar is being replaced by the footer, but keeping the class for now */
-.status-bar{
-  display:flex;
-  gap:12px;
-  justify-content:space-between;
-  align-items:center;
-  padding:10px 20px; /* Adjusted padding to match toolbar */
-  background: var(--panel);
-  border-top: 1px solid rgba(255,255,255,0.05);
-  box-shadow: 0 -2px 8px rgba(0,0,0,0.4);
-  font-size: 13px;
-}
-
-.status-bar span {
-  /* Ensure status bar items are visible */
-  color: var(--text);
-}
+/* --- Status Bar (Removed, now in header) --- */
 
 /* --- Pattern Selector (Minor Polish) --- */
 .pattern-card {
