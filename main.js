@@ -7,7 +7,7 @@ import { LibraryManager } from './src/librarymanager.js';
 import { AppState } from './src/appstate.js'; // NEW
 import { UIController } from './src/uicontroller.js'; // NEW
 import PatternSelector from './src/patternselector.js';
-import { VisualSequencer } from './src/visualsequencer.js';
+import VisualSequencer from './src/visualsequencer.js';
 
 // Import Adapters (assuming they exist and are needed for pattern conversion)
 import { DrumAdapter } from './src/drumadapter.js';
