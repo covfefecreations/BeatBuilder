@@ -8,9 +8,10 @@ export class UIController {
     this.library = libraryManager;
     this.elementCache = {};
 
-    this.cacheElements();
-    this.setupEventListeners();
-    this.setupStateSubscriptions();
+	    this.cacheElements();
+	    this.setupEventListeners();
+	    this.setupTrackControlListeners(); // NEW
+	    this.setupStateSubscriptions();
     this.renderInitialState();
   }
 
@@ -28,9 +29,10 @@ export class UIController {
       libraryPanel: document.getElementById('library-panel'),
       statusBar: document.getElementById('status-bar'),
       trackCount: document.getElementById('track-count'),
-      // Assuming record buttons are not in index.html yet, but good to check
-      // recordButton: document.getElementById('record-button'),
-    };
+	      // Assuming record buttons are not in index.html yet, but good to check
+	      // recordButton: document.getElementById('record-button'),
+	      trackControlsContainer: document.getElementById('track-controls-container'),
+	    };
   }
 
   /**
@@ -47,11 +49,40 @@ export class UIController {
     if (exportMidiBtn) exportMidiBtn.addEventListener('click', () => this.handleExport('midi'));
 
     // Prevent form submission on enter in BPM field
-    if (bpmInput) {
-      bpmInput.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') e.preventDefault();
-      });
-    }
+	    if (bpmInput) {
+	      bpmInput.addEventListener('keydown', (e) => {
+	        if (e.key === 'Enter') e.preventDefault();
+	      });
+	    }
+	  }
+	  
+	  /**
+	   * Set up event listeners for track controls (mute, solo, volume).
+	   */
+	  setupTrackControlListeners() {
+	    const container = this.elementCache.trackControlsContainer;
+	    if (!container) return;
+	    
+	    container.addEventListener('click', (e) => {
+	      const btn = e.target.closest('.track-btn');
+	      if (btn) {
+	        const trackId = btn.dataset.trackId;
+	        if (btn.classList.contains('mute-btn')) {
+	          this.state.toggleTrackMute(trackId);
+	        } else if (btn.classList.contains('solo-btn')) {
+	          this.state.toggleTrackSolo(trackId);
+	        }
+	      }
+	    });
+	    
+	    container.addEventListener('input', (e) => {
+	      const slider = e.target.closest('.volume-slider');
+	      if (slider) {
+	        const trackId = slider.dataset.trackId;
+	        this.state.setTrackVolume(trackId, parseFloat(slider.value));
+	      }
+	    });
+	  }
   }
 
   /**
@@ -60,11 +91,24 @@ export class UIController {
   setupStateSubscriptions() {
     this.state.subscribe('isPlaying', (isPlaying) => this.updatePlayButton(isPlaying));
     this.state.subscribe('bpm', (bpm) => this.updateBPMInput(bpm));
-    this.state.subscribe('tracks', (tracks) => this.updateTrackCount(tracks));
-    this.state.subscribe('all', (value, key) => {
-      // General status updates for all state changes, useful for debugging/logging
-      // this.updateStatus(`State changed: ${key} = ${value}`);
-    });
+	    this.state.subscribe('tracks', (tracks) => {
+	      this.updateTrackCount(tracks);
+	      // Notify the VisualSequencer to re-render the track controls when the track list changes
+	      // This is necessary because the track controls are rendered by VisualSequencer
+	      // and need to reflect the new state (e.g., a new track added)
+	      if (this.visualSequencer && this.visualSequencer.renderTrackControls) {
+	        this.visualSequencer.renderTrackControls();
+	      }
+	    });
+	    this.state.subscribe('all', (value, key) => {
+	      // General status updates for all state changes, useful for debugging/logging
+	      // this.updateStatus(`State changed: ${key} = ${value}`);
+	      
+	      // Re-render track controls on any track property change (mute, solo, volume)
+	      if (key.startsWith('track:') && this.visualSequencer && this.visualSequencer.renderTrackControls) {
+	        this.visualSequencer.renderTrackControls();
+	      }
+	    });
   }
 
   /**

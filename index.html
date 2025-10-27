@@ -28,19 +28,25 @@
     </header>
 
     <!-- Main Content Area -->
-    <div class="main-content">
+	    <div class="main-content">
+	      <!-- The sequencer-wrapper will be a flex container to hold the track controls and the sequencer area side-by-side -->
       
       <!-- Library Panel (Slides in from left) -->
       <aside id="library-panel" class="library-panel">
         <!-- PatternSelector will render here -->
       </aside>
 
-      <!-- Sequencer Area -->
-      <main class="sequencer-area">
-        <div id="sequencer-container">
-          <!-- VisualSequencer renders here -->
-        </div>
-      </main>
+	      <!-- Sequencer Area -->
+	      <div class="sequencer-wrapper">
+	        <aside id="track-controls-container" class="track-controls-container">
+	          <!-- Track controls rendered by VisualSequencer will go here -->
+	        </aside>
+	        <main class="sequencer-area">
+	          <div id="sequencer-container">
+	            <!-- VisualSequencer renders here -->
+	          </div>
+	        </main>
+	      </div>
 
     </div>
 

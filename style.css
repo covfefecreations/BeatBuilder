@@ -152,22 +152,136 @@ input[type="number"]:focus {
 
 /* --- Main layout --- */
 .main-content {
-  flex: 1;
-  display: flex;
-  padding: 20px; /* Add main content padding */
-  gap: 20px;
-}
+	  flex: 1;
+	  display: flex;
+	  padding: 20px; /* Add main content padding */
+	  gap: 20px;
+	}
+	
+	/* Sequencer Wrapper: Contains controls and the sequencer itself */
+	.sequencer-wrapper {
+	  display: flex;
+	  flex: 1;
+	  min-height: 400px; /* Fix for the sequencer visibility issue */
+	  border-radius: var(--radius);
+	  overflow: hidden; /* To contain the controls and sequencer area */
+	  box-shadow: var(--shadow);
+	}
+	
+	/* Track Controls Container (Mixer Strip) */
+	.track-controls-container {
+	  background: var(--panel);
+	  padding: 15px 10px;
+	  display: flex;
+	  flex-direction: column;
+	  gap: 1px; /* Gap between track control panels */
+	  border-right: 1px solid rgba(255,255,255,0.05);
+	}
+	
+	.track-control-panel {
+	  display: flex;
+	  flex-direction: column;
+	  align-items: center;
+	  justify-content: space-around;
+	  width: 80px; /* Fixed width for mixer strip */
+	  padding: 5px 0;
+	  border-bottom: 1px solid rgba(255,255,255,0.02);
+	}
+	
+	.track-label {
+	  font-size: 11px;
+	  font-weight: 500;
+	  color: var(--subtext);
+	  white-space: nowrap;
+	  overflow: hidden;
+	  text-overflow: ellipsis;
+	  max-width: 90%;
+	}
+	
+	.track-buttons {
+	  display: flex;
+	  gap: 5px;
+	  margin: 5px 0;
+	}
+	
+	.track-btn {
+	  width: 25px;
+	  height: 25px;
+	  padding: 0;
+	  font-size: 10px;
+	  font-weight: 700;
+	  border-radius: 4px;
+	  background: rgba(255,255,255,0.05);
+	  border: 1px solid rgba(255,255,255,0.1);
+	  color: var(--text);
+	  cursor: pointer;
+	  transition: all 0.1s;
+	}
+	
+	.track-btn:hover {
+	  background: rgba(255,255,255,0.1);
+	}
+	
+	.track-btn.mute-btn.active {
+	  background: var(--accent-2); /* Red for Mute */
+	  color: var(--bg);
+	  border-color: var(--accent-2);
+	}
+	
+	.track-btn.solo-btn.active {
+	  background: #ffc107; /* Yellow for Solo */
+	  color: #000;
+	  border-color: #ffc107;
+	}
+	
+	.track-btn.forced-mute {
+	  opacity: 0.5;
+	  pointer-events: none;
+	  border-style: dashed;
+	}
+	
+	.volume-slider {
+	  -webkit-appearance: none;
+	  appearance: none;
+	  width: 60px;
+	  height: 4px;
+	  background: var(--muted);
+	  outline: none;
+	  opacity: 0.7;
+	  -webkit-transition: .2s;
+	  transition: opacity .2s;
+	  transform: rotate(270deg);
+	  margin: 25px 0;
+	}
+	
+	.volume-slider::-webkit-slider-thumb {
+	  -webkit-appearance: none;
+	  appearance: none;
+	  width: 12px;
+	  height: 12px;
+	  border-radius: 50%;
+	  background: var(--accent);
+	  cursor: pointer;
+	}
+	
+	.volume-slider::-moz-range-thumb {
+	  width: 12px;
+	  height: 12px;
+	  border-radius: 50%;
+	  background: var(--accent);
+	  cursor: pointer;
+	}
+	
+	/* Sequencer Area */
 
 /* Sequencer Area */
-.sequencer-area {
-  flex: 1;
-  min-width: 0; /* Allows flex item to shrink */
-  background: var(--panel);
-  border-radius: var(--radius);
-  padding: 15px;
-  box-shadow: var(--shadow);
-  overflow-x: auto; /* Allow horizontal scrolling for the sequencer */
-}
+	.sequencer-area {
+	  flex: 1;
+	  min-width: 0; /* Allows flex item to shrink */
+	  background: var(--panel);
+	  padding: 15px;
+	  overflow-x: auto; /* Allow horizontal scrolling for the sequencer */
+	}
 
 #sequencer-container {
   /* No direct styling needed, as it holds the SVG which controls its own size */
@@ -236,7 +350,7 @@ input[type="number"]:focus {
 }
 
 /* Playhead */
-.sequencer-area svg rect[fill="#fff"] { /* Target the playhead by its unique color */
+	.sequencer-area svg rect.playhead { /* Target the playhead by its class */
   mix-blend-mode: overlay;
   filter: drop-shadow(0 0 5px rgba(255,255,255,0.5));
 }
@@ -248,13 +362,47 @@ input[type="number"]:focus {
   font-weight: 600;
 }
 
-/* --- Responsive adjustments --- */
-@media (max-width: 768px) {
-  .main-content {
-    flex-direction: column;
-    padding: 10px;
-    gap: 10px;
-  }
+	/* --- Responsive adjustments --- */
+	@media (max-width: 768px) {
+	  .main-content {
+	    flex-direction: column;
+	    padding: 10px;
+	    gap: 10px;
+	  }
+	  
+	  .sequencer-wrapper {
+	    flex-direction: column;
+	    min-height: auto;
+	  }
+	
+	  .track-controls-container {
+	    flex-direction: row;
+	    width: 100%;
+	    height: 80px;
+	    border-right: none;
+	    border-bottom: 1px solid rgba(255,255,255,0.05);
+	    overflow-x: auto;
+	    padding: 10px;
+	  }
+	  
+	  .track-control-panel {
+	    width: 60px;
+	    min-width: 60px;
+	    height: 100%;
+	    padding: 0 5px;
+	  }
+	  
+	  .volume-slider {
+	    display: none; /* Hide vertical slider on mobile */
+	  }
+	
+	  .track-label {
+	    display: none;
+	  }
+	
+	  .track-buttons {
+	    flex-direction: column;
+	  }
   
   .toolbar {
     padding: 10px;

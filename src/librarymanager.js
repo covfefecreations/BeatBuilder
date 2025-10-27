@@ -114,61 +114,94 @@ export class LibraryManager {
    * @param {number} duration - Duration in seconds to play the preview.
    * @returns {Promise<void>}
    */
+  /**
+   * Previews a pattern by converting it and playing it for a short duration using a dedicated, temporary scheduler.
+   * This ensures zero interference with the main sequencer state.
+   * @param {object} pattern - The pattern object to preview.
+   * @param {object} adapters - Object containing { drumAdapter, bassAdapter, chordAdapter, leadAdapter }.
+   * @param {object} audioEngine - The main AudioEngine instance (to access players/synths).
+   * @param {number} duration - Duration in seconds to play the preview.
+   * @returns {Promise<void>}
+   */
   async previewPattern(pattern, adapters, audioEngine, duration = 4) {
     console.log(`Previewing pattern: ${pattern.name} for ${duration}s`);
 
     // 1. Convert pattern to track format
     let track;
-    switch (pattern.type) {
-      case 'drums':
-        track = adapters.drumAdapter.convert(pattern);
-        break;
-      case 'bass':
-        track = adapters.bassAdapter.convert(pattern);
-        break;
-      case 'chords':
-        track = adapters.chordAdapter.convert(pattern);
-        break;
-      case 'leads':
-        track = adapters.leadAdapter.convert(pattern);
-        break;
-      default:
-        console.warn('Cannot preview: Unknown pattern type:', pattern.type);
-        return;
+    const adapter = adapters[`${pattern.type}Adapter`];
+    if (adapter) {
+      track = adapter.convert(pattern);
+    } else {
+      console.warn('Cannot preview: Unknown pattern type or missing adapter:', pattern.type);
+      return;
     }
 
-    // 2. Create temporary AudioEngine instance (or use the main one carefully)
-    // The prompt suggests creating a temporary one, but for simplicity and to avoid
-    // Tone.js context issues, we'll use the main one, ensuring we stop it after.
-    // NOTE: This assumes the main AudioEngine can handle temporary track loading
-    // without interfering with the main sequencer state (which is managed by AppState).
+    // 2. Schedule a temporary Tone.Part
+    const bpm = pattern.bpm || 120;
+    const events = [];
+    track.pattern.forEach((p) => {
+      if (!p.active) return;
+      const timeInBeats = p.time;
+      events.push([timeInBeats, { track, noteEvent: p }]);
+    });
+
+    if (events.length === 0) {
+      console.log('Pattern is empty, skipping preview.');
+      return;
+    }
     
-    // 3. Play for duration then stop
-    const originalTracks = audioEngine.getTracks(); // Assuming a getter exists
-    const originalIsPlaying = audioEngine.isPlaying(); // Assuming a getter exists
+    // Ensure Tone.js is running
+    if (Tone.context.state !== "running") await Tone.start();
 
-    // Stop main playback if it's running
-    if (originalIsPlaying) {
-      audioEngine.stop();
-    }
-
-    // Load only the preview track
-    audioEngine.loadTracks([track]);
-    audioEngine.start(pattern.bpm || 120);
-
-    // Wait for the duration
-    await new Promise(resolve => setTimeout(resolve, duration * 1000));
-
-    // Stop the preview
-    audioEngine.stop();
+    // Use a temporary Transport to schedule the part, ensuring it stops after the duration.
+    // NOTE: Tone.Transport is global, so we must stop it and restore its state.
+    // The safest way to avoid interference is to use Tone.Part and schedule it relative to the global Transport,
+    // but manage its lifecycle and restore the main state.
     
-    // Restore original state
-    audioEngine.loadTracks(originalTracks);
-    if (originalIsPlaying) {
-      audioEngine.start(audioEngine.getBPM()); // Assuming a getBPM getter exists
-    }
+    // Since the main AudioEngine uses the global Tone.Transport, we will use a dedicated Tone.Part
+    // and rely on the main AudioEngine's _triggerNote method for sound.
 
-    console.log('Preview finished.');
+    // Save current state
+    const originalBPM = Tone.Transport.bpm.value;
+    const originalState = Tone.Transport.state;
+    
+    // Stop main playback if running and set new BPM
+    if (originalState === 'started') {
+      Tone.Transport.stop();
+    }
+    Tone.Transport.bpm.value = bpm;
+    
+    // Create and start the temporary part
+    const part = new Tone.Part((time, value) => {
+      audioEngine._triggerNote(value.track, value.noteEvent, time);
+    }, events).start(0);
+
+    part.loop = true;
+    part.loopEnd = "4m"; // Default loop end
+
+    // Start transport for preview
+    Tone.Transport.start("+0.05");
+
+    // Schedule the stop event
+    const stopTime = `+${duration}`; // Stop after 'duration' seconds
+    Tone.Transport.scheduleOnce(() => {
+      Tone.Transport.stop();
+      part.dispose(); // Clean up the temporary part
+      
+      // Restore original state
+      Tone.Transport.bpm.value = originalBPM;
+      if (originalState === 'started') {
+        // Re-schedule the main tracks and restart transport
+        audioEngine.createParts(); 
+        Tone.Transport.start("+0.05");
+      } else {
+        audioEngine.createParts(); // Ensure main parts are re-created after transport stop/start
+      }
+      console.log('Preview finished. State restored.');
+    }, stopTime);
+
+    // Wait for the scheduled stop to happen (or timeout if something goes wrong)
+    await new Promise(resolve => setTimeout(resolve, (duration + 0.5) * 1000));
   }
 
   // Search patterns by text

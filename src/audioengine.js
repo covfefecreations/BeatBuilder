@@ -7,7 +7,8 @@
 // Note: Expects Tone.js to be loaded globally from CDN
 
 export default class AudioEngine {
-  constructor() {
+	  constructor(appState) {
+	    this.appState = appState;
     this.tracks = []; // sequencer-ready tracks
     this.players = {}; // named samplers/players for drum hits
     this.synths = {}; // synths for chords / bass
@@ -55,11 +56,18 @@ export default class AudioEngine {
     this.createParts();
   }
 
-  createParts() {
+  createParts = () => {
     Tone.Transport.cancel(0);
     this.parts = [];
 
-    this.tracks.forEach((track) => {
+	    this.tracks.forEach((track) => {
+	      // Add track-specific volume/mute/solo controls here (Phase 4)
+	      // For now, ensure track has a volume property
+	      if (typeof track.volume === 'undefined') track.volume = 1;
+	      if (typeof track.mute === 'undefined') track.mute = false;
+	      if (typeof track.solo === 'undefined') track.solo = false;
+	      
+	      // build an array of events: [ [timeString, eventObj], ... ]
       // build an array of events: [ [timeString, eventObj], ... ]
       const events = [];
       track.pattern.forEach((p) => {
@@ -72,10 +80,29 @@ export default class AudioEngine {
       if (events.length === 0) return;
 
       // Use Tone.Part to schedule events relative to Transport start.
-      const part = new Tone.Part((time, value) => {
-        // value: { track, noteEvent }
-        this._triggerNote(value.track, value.noteEvent, time);
-      }, events).start(0);
+	      const part = new Tone.Part((time, value) => {
+	        // value: { track, noteEvent }
+	        this._triggerNote(value.track, value.noteEvent, time);
+	        
+	        // Visual Feedback: Highlight the note when it plays
+	        this.appState.notify('highlightNote', {
+	          trackId: value.track.id,
+	          noteTime: value.noteEvent.time,
+	          duration: value.noteEvent.duration || 0.25, // Default duration
+	          highlight: true
+	        });
+	        
+	        // Schedule the un-highlight event
+	        Tone.Transport.scheduleOnce(() => {
+	          this.appState.notify('highlightNote', {
+	            trackId: value.track.id,
+	            noteTime: value.noteEvent.time,
+	            duration: value.noteEvent.duration || 0.25,
+	            highlight: false
+	          });
+	        }, time + (value.noteEvent.duration || 0.25) * Tone.Transport.PPQ / Tone.Transport.PPQ); // Schedule un-highlight after note duration
+	        
+	      }, events).start(0);
 
       part.loop = true;
       part.loopEnd = "4m"; // default 4 bars loop - can be overridden with track.length
@@ -83,38 +110,52 @@ export default class AudioEngine {
     });
   }
 
-  _triggerNote(track, noteEvent, time) {
+  _triggerNote = (track, noteEvent, time) => {
     // Decide how to sound this: drums vs bass vs chord
     const t = (track.meta && track.meta.type) || (track.title || "").toLowerCase();
     if (/kick|snare|hat|clap|tom|wood/i.test(track.title) || (track.meta && track.meta.sampleSet && track.meta.sampleSet.length)) {
       // attempt to use players by label -> fallback to first player
       const playerName = noteEvent.note || track.title;
-      // prefer exact match
-      const player = this.players[playerName] || this.players["Kick"] || Object.values(this.players)[0];
-      if (player) player.start(time);
-      return;
+	      // prefer exact match
+	      const player = this.players[playerName] || this.players["Kick"] || Object.values(this.players)[0];
+	      if (player && this.appState.isTrackAudible(track.id)) {
+	        // Tone.js player volume control is complex. For now, we only handle mute/solo.
+	        // Full volume control would require routing the player through a Tone.Gain node.
+	        player.start(time);
+	      }
+	      return;
     }
 
     if (t.includes("bass") || track.title.toLowerCase().includes("bass")) {
-      // expect noteEvent.note to be e.g. "A2" or midi number. Accept both.
-      const note = typeof noteEvent.note === "number" ? Tone.Frequency(noteEvent.note, "midi").toNote() : noteEvent.note;
-      this.synths["bass"].triggerAttackRelease(note, "8n", time, noteEvent.velocity || 1);
-      return;
+	      // expect noteEvent.note to be e.g. "A2" or midi number. Accept both.
+	      const note = typeof noteEvent.note === "number" ? Tone.Frequency(noteEvent.note, "midi").toNote() : noteEvent.note;
+	      if (this.appState.isTrackAudible(track.id)) {
+	        // Volume control for synths can be done via velocity (last argument)
+	        const finalVelocity = (noteEvent.velocity || 1) * track.volume;
+	        this.synths["bass"].triggerAttackRelease(note, "8n", time, finalVelocity);
+	      }
+	      return;
     }
 
     // chords/harmony
     if (track.title.toLowerCase().includes("chord") || track.meta && track.meta.type === "chord") {
       // noteEvent.note may be symbol like "C" or "Cmaj7" — expand to triad if necessary
       const chord = noteEvent.note;
-      const notes = this._expandChordSymbol(chord);
-      this.synths["chord"].triggerAttackRelease(notes, "1n", time, noteEvent.velocity || 0.8);
-      return;
+	      const notes = this._expandChordSymbol(chord);
+	      if (this.appState.isTrackAudible(track.id)) {
+	        const finalVelocity = (noteEvent.velocity || 0.8) * track.volume;
+	        this.synths["chord"].triggerAttackRelease(notes, "1n", time, finalVelocity);
+	      }
+	      return;
     }
 
-    // fallback: simple synth note
-    const fallbackNote = typeof noteEvent.note === "number" ? Tone.Frequency(noteEvent.note, "midi").toNote() : (noteEvent.note || "C3");
-    this.synths["chord"].triggerAttackRelease(fallbackNote, "8n", time, noteEvent.velocity || 0.8);
-  }
+	    // fallback: simple synth note
+	    const fallbackNote = typeof noteEvent.note === "number" ? Tone.Frequency(noteEvent.note, "midi").toNote() : (noteEvent.note || "C3");
+	    if (this.appState.isTrackAudible(track.id)) {
+	      const finalVelocity = (noteEvent.velocity || 0.8) * track.volume;
+	      this.synths["chord"].triggerAttackRelease(fallbackNote, "8n", time, finalVelocity);
+	    }
+	  }
 
   _expandChordSymbol(sym) {
     // very small utility - expand C -> [C3,E3,G3], Am -> [A2,C3,E3], etc.
@@ -139,15 +180,28 @@ export default class AudioEngine {
     } catch (e) { return [sym]; }
   }
 
-  async start(bpm = 120) {
-    Tone.Transport.bpm.value = bpm;
-    if (Tone.context.state !== "running") await Tone.start();
-    Tone.Transport.start("+0.05");
-  }
+	  async start(bpm = 120) {
+	    Tone.Transport.bpm.value = bpm;
+	    if (Tone.context.state !== "running") await Tone.start();
+	    
+	    // Start the beat update loop
+	    if (!this.beatLoop) {
+	      this.beatLoop = Tone.Transport.scheduleRepeat((time) => {
+	        Tone.Draw.schedule(() => {
+	          const currentBeat = Tone.Transport.seconds * (Tone.Transport.bpm.value / 60);
+	          this.appState.set('currentBeat', currentBeat);
+	        }, time);
+	      }, "16n"); // Update every 16th note
+	    }
+	    
+	    Tone.Transport.start("+0.05");
+	    this.appState.set('isPlaying', true);
+	  }
 
-  stop() {
-    Tone.Transport.stop();
-  }
+	  stop() {
+	    Tone.Transport.stop();
+	    this.appState.set('isPlaying', false);
+	  }
 
   // --- Getters for LibraryManager Preview ---
   getTracks() {
