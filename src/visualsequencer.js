@@ -39,17 +39,20 @@ export default class VisualSequencer {
     // Clear container
     this.container.innerHTML = "";
     this.noteRects = new Map();
-    
+
     // Create SVG canvas
     const svg = document.createElementNS(this.svgNS, "svg");
-    const svgHeight = this.tracks.length * this.heightPerTrack;
+    // Show at least 4 track rows even when empty (320px minimum)
+    const minHeight = 4 * this.heightPerTrack;
+    const svgHeight = Math.max(this.tracks.length * this.heightPerTrack, minHeight);
     svg.setAttribute("width", "100%");
     svg.setAttribute("height", svgHeight);
     svg.style.background = "var(--bg-primary)";
     svg.style.display = "block";
+    svg.style.minHeight = minHeight + "px";
 
     // Render grid
-    this.renderGrid(svg);
+    this.renderGrid(svg, svgHeight);
 
     // Render each track
     this.tracks.forEach((track, i) => {
@@ -71,10 +74,13 @@ export default class VisualSequencer {
     this.svg = svg;
   }
 
-  renderGrid(svg) {
+  renderGrid(svg, svgHeight) {
     const totalBeats = 64;
     const grid = document.createElementNS(this.svgNS, "g");
     grid.setAttribute("class", "sequencer-grid");
+
+    // Use passed svgHeight or calculate from tracks
+    const gridHeight = svgHeight || (this.tracks.length * this.heightPerTrack);
 
     // Vertical beat lines
     for (let i = 0; i <= totalBeats; i++) {
@@ -83,7 +89,7 @@ export default class VisualSequencer {
       line.setAttribute("x1", x);
       line.setAttribute("y1", 0);
       line.setAttribute("x2", x);
-      line.setAttribute("y2", this.tracks.length * this.heightPerTrack);
+      line.setAttribute("y2", gridHeight);
       
       // Emphasize every 4th beat (bar lines)
       if (i % 4 === 0) {
@@ -113,7 +119,7 @@ export default class VisualSequencer {
     }
 
     // Horizontal track separator lines
-    for (let i = 1; i < this.tracks.length; i++) {
+    for (let i = 1; i < Math.max(this.tracks.length, 4); i++) {
       const line = document.createElementNS(this.svgNS, "line");
       const y = i * this.heightPerTrack;
       line.setAttribute("x1", 0);
@@ -127,6 +133,19 @@ export default class VisualSequencer {
     }
 
     svg.appendChild(grid);
+
+    // Add helpful text when empty
+    if (this.tracks.length === 0) {
+      const emptyText = document.createElementNS(this.svgNS, "text");
+      emptyText.setAttribute("x", (totalBeats * this.zoom) / 2);
+      emptyText.setAttribute("y", gridHeight / 2);
+      emptyText.setAttribute("text-anchor", "middle");
+      emptyText.setAttribute("fill", "var(--text-tertiary)");
+      emptyText.setAttribute("font-size", "16");
+      emptyText.setAttribute("opacity", "0.5");
+      emptyText.textContent = "Tap ▤ to browse and load patterns";
+      svg.appendChild(emptyText);
+    }
   }
 
   renderTrack(svg, track, trackIndex) {
