@@ -1,81 +1,308 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- ===== Meta Information ===== -->
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BeatBuilder v0.4.0</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="description" content="BeatBuilder - A modern, intuitive beat creation tool for music producers">
+  <meta name="author" content="BeatBuilder">
+  <meta name="theme-color" content="#0d0d0d">
+  
+  <!-- ===== Title ===== -->
+  <title>BeatBuilder v2.0</title>
+  
+  <!-- ===== Favicon ===== -->
+  <!-- Add your favicon here -->
+  <!-- <link rel="icon" type="image/svg+xml" href="/favicon.svg"> -->
+  <!-- <link rel="icon" type="image/png" href="/favicon.png"> -->
+  
+  <!-- ===== Preconnect for Performance ===== -->
+  <!-- Add if using external resources -->
+  
+  <!-- ===== Stylesheet ===== -->
   <link rel="stylesheet" href="style.css">
+  
+  <!-- ===== Preload Critical Resources ===== -->
+  <link rel="modulepreload" href="main.js">
 </head>
 <body>
+  <!-- ===== Main Application Container ===== -->
   <div class="app-container">
 
-    <!-- Top Header with Brand and Status -->
-    <header class="toolbar">
+    <!-- ===== Header / Toolbar ===== -->
+    <header class="toolbar" role="banner">
+      <!-- Status Information (Left) -->
       <div class="status-info">
-        <span id="status-bar">Ready</span>
-        <span class="separator">•</span>
-        <span id="track-count">0 tracks</span>
+        <span id="status-bar" class="status-text" aria-live="polite">Ready</span>
+        <span class="separator" aria-hidden="true">•</span>
+        <span id="track-count" class="track-count">0 tracks</span>
       </div>
 
+      <!-- Brand Title (Center) -->
       <div class="brand-title">
         <h1>BEATBUILDER</h1>
       </div>
 
+      <!-- Toolbar Actions (Right) -->
       <div class="toolbar-actions">
-        <!-- Spacer for symmetry -->
+        <button 
+          class="library-toggle" 
+          aria-label="Toggle library panel"
+          aria-expanded="false"
+          aria-controls="library-panel"
+          title="Open Library"
+        >▤</button>
       </div>
     </header>
 
-    <!-- Main Content Area -->
-    <div class="main-content">
-      <!-- Sequencer Area -->
+    <!-- ===== Main Content Area ===== -->
+    <main class="main-content" role="main">
+      <!-- Sequencer Wrapper -->
       <div class="sequencer-wrapper">
-        <aside id="track-controls-container" class="track-controls-container">
-          <!-- Track controls rendered by VisualSequencer will go here -->
+        
+        <!-- Track Controls Sidebar (Left) -->
+        <aside 
+          id="track-controls-container" 
+          class="track-controls-container"
+          role="complementary"
+          aria-label="Track controls"
+        >
+          <!-- Track controls dynamically rendered by VisualSequencer -->
         </aside>
-        <main class="sequencer-area">
-          <div id="sequencer-container">
-            <!-- VisualSequencer renders here -->
-          </div>
-        </main>
-      </div>
-    </div>
 
-    <!-- Library Panel (Fixed on right) -->
-    <aside id="library-panel">
-      <!-- PatternSelector will render here -->
+        <!-- Sequencer Area (Center) -->
+        <section class="sequencer-area" aria-label="Step sequencer">
+          <div id="sequencer-container">
+            <!-- VisualSequencer dynamically renders SVG here -->
+          </div>
+        </section>
+
+      </div>
+    </main>
+
+    <!-- ===== Library Panel (Right Sidebar) ===== -->
+    <aside 
+      id="library-panel" 
+      class="library-panel"
+      role="complementary"
+      aria-label="Pattern library"
+      aria-hidden="true"
+    >
+      <!-- PatternSelector dynamically renders content here -->
     </aside>
 
-    <!-- Footer Controls -->
-    <footer class="footer-controls">
-      <div class="transport-section">
-        <button id="play-button" class="transport-btn play-btn">
-          <span class="btn-icon">▶</span>
+    <!-- ===== Footer Controls ===== -->
+    <footer class="footer-controls" role="contentinfo">
+      
+      <!-- Transport Controls (Left) -->
+      <div class="transport-section" role="group" aria-label="Playback controls">
+        <button 
+          id="play-button" 
+          class="transport-btn play-btn"
+          aria-label="Play"
+          title="Play (Space)"
+        >
+          <span class="btn-icon" aria-hidden="true">▶</span>
           <span class="btn-label">Play</span>
         </button>
-        <button id="stop-button" class="transport-btn stop-btn">
-          <span class="btn-icon">⏹</span>
+        
+        <button 
+          id="stop-button" 
+          class="transport-btn stop-btn"
+          aria-label="Stop"
+          title="Stop (Space)"
+        >
+          <span class="btn-icon" aria-hidden="true">⏹</span>
           <span class="btn-label">Stop</span>
         </button>
-        <div class="bpm-control">
-          <input id="bpm-input" type="number" min="60" max="200" value="120">
-          <label>BPM</label>
+        
+        <div class="bpm-control" role="group" aria-label="Tempo control">
+          <input 
+            id="bpm-input" 
+            type="number" 
+            min="60" 
+            max="200" 
+            step="1"
+            value="120"
+            aria-label="Beats per minute"
+            title="Tempo (BPM)"
+          >
+          <label for="bpm-input">BPM</label>
         </div>
       </div>
-      <div class="export-section">
-        <button id="export-json" class="export-btn">
-          <span class="btn-icon">📄</span>
+
+      <!-- Export Controls (Right) -->
+      <div class="export-section" role="group" aria-label="Export options">
+        <button 
+          id="export-json" 
+          class="export-btn"
+          aria-label="Export as JSON"
+          title="Export project as JSON file"
+        >
+          <span class="btn-icon" aria-hidden="true">📄</span>
           <span class="btn-label">Export JSON</span>
         </button>
-        <button id="export-midi" class="export-btn">
-          <span class="btn-icon">🎹</span>
+        
+        <button 
+          id="export-midi" 
+          class="export-btn"
+          aria-label="Export as MIDI"
+          title="Export project as MIDI file"
+        >
+          <span class="btn-icon" aria-hidden="true">🎹</span>
           <span class="btn-label">Export MIDI</span>
         </button>
       </div>
+
     </footer>
 
   </div>
 
+  <!-- ===== Loading Indicator (Optional) ===== -->
+
+  <!--
+  <div id="loading-screen" class="loading-screen">
+    <div class="loading-spinner"></div>
+    <p>Loading BeatBuilder...</p>
+  </div>
+  -->
+
+  <!-- ===== Keyboard Shortcuts Help (Optional) ===== -->
+  <!-- Uncomment if you want to add a keyboard shortcuts modal -->
+  <!--
+  <div id="shortcuts-modal" class="modal" role="dialog" aria-hidden="true">
+    <div class="modal-content">
+      <h2>Keyboard Shortcuts</h2>
+      <ul>
+        <li><kbd>Space</kbd> - Play/Stop</li>
+        <li><kbd>Delete</kbd> - Remove selected track</li>
+        <li><kbd>Ctrl+S</kbd> - Save session</li>
+        <li><kbd>Ctrl+E</kbd> - Export JSON</li>
+        <li><kbd>L</kbd> - Toggle library</li>
+      </ul>
+      <button class="close-modal">Close</button>
+    </div>
+  </div>
+  -->
+
+  <!-- ===== Main Application Script ===== -->
   <script type="module" src="main.js"></script>
+
+  <!-- ===== Inline Error Handling Script ===== -->
+  <script>
+    // Show a user-friendly error if JavaScript fails to load
+    window.addEventListener('error', function(event) {
+      if (event.filename && event.filename.includes('main.js')) {
+        document.body.innerHTML = `
+          <div style="
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background: #0d0d0d;
+            color: #f0f0f0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            text-align: center;
+            padding: 20px;
+          ">
+            <h1 style="font-size: 32px; margin-bottom: 16px;">⚠️ BeatBuilder Failed to Load</h1>
+            <p style="font-size: 16px; color: #999; max-width: 500px; margin-bottom: 24px;">
+              There was an error loading the application. This could be due to:
+            </p>
+            <ul style="text-align: left; color: #999; max-width: 500px; margin-bottom: 24px;">
+              <li>Missing JavaScript files</li>
+              <li>Browser compatibility issues</li>
+              <li>Network connection problems</li>
+            </ul>
+            <p style="font-size: 14px; color: #666;">
+              Please refresh the page or check the browser console for details.
+            </p>
+            <button 
+              onclick="location.reload()" 
+              style="
+                margin-top: 24px;
+                padding: 12px 24px;
+                background: #00e5ff;
+                color: #0d0d0d;
+                border: none;
+                border-radius: 6px;
+                font-size: 14px;
+                font-weight: 600;
+                cursor: pointer;
+              "
+            >
+              Reload Page
+            </button>
+          </div>
+        `;
+      }
+    });
+
+    // Check for browser compatibility
+    (function() {
+      const requiredFeatures = {
+        'ES6 Modules': typeof Symbol !== 'undefined',
+        'Promises': typeof Promise !== 'undefined',
+        'Fetch API': typeof fetch !== 'undefined',
+        'Web Audio API': typeof AudioContext !== 'undefined' || typeof webkitAudioContext !== 'undefined'
+      };
+
+      const unsupported = Object.entries(requiredFeatures)
+        .filter(([name, supported]) => !supported)
+        .map(([name]) => name);
+
+      if (unsupported.length > 0) {
+        console.error('Browser compatibility check failed. Missing features:', unsupported);
+        
+        // Optionally show a warning to the user
+        const warning = document.createElement('div');
+        warning.style.cssText = `
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          background: #ff4466;
+          color: white;
+          padding: 12px;
+          text-align: center;
+          font-family: sans-serif;
+          font-size: 14px;
+          z-index: 10000;
+        `;
+        warning.textContent = `⚠️ Your browser may not support all features. Missing: ${unsupported.join(', ')}`;
+        document.body.insertBefore(warning, document.body.firstChild);
+      } else {
+        console.log('✅ Browser compatibility check passed');
+      }
+    })();
+  </script>
+
+  <!-- ===== No JavaScript Fallback ===== -->
+  <noscript>
+    <div style="
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background: #0d0d0d;
+      color: #f0f0f0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      text-align: center;
+      padding: 20px;
+    ">
+      <h1 style="font-size: 32px; margin-bottom: 16px;">⚠️ JavaScript Required</h1>
+      <p style="font-size: 16px; color: #999; max-width: 500px;">
+        BeatBuilder requires JavaScript to run. Please enable JavaScript in your browser settings and reload the page.
+      </p>
+    </div>
+  </noscript>
+
 </body>
 </html>
+```
+
+
+
