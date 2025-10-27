@@ -8,55 +8,69 @@
 </head>
 <body>
   <div class="app-container">
-    
-    <!-- Top Toolbar -->
+
+    <!-- Top Header with Brand and Status -->
     <header class="toolbar">
-      <div class="logo">🎵 BeatBuilder</div>
-      
       <div class="status-info">
         <span id="status-bar">Ready</span>
+        <span class="separator">•</span>
         <span id="track-count">0 tracks</span>
       </div>
 
+      <div class="brand-title">
+        <h1>BEATBUILDER</h1>
+      </div>
+
       <div class="toolbar-actions">
-        <!-- The library toggle is removed as the panel is now fixed -->
-        <!-- The export buttons are moved to the footer -->
+        <!-- Spacer for symmetry -->
       </div>
     </header>
 
     <!-- Main Content Area -->
-	    <div class="main-content">
-	      <!-- The sequencer-wrapper will be a flex container to hold the track controls and the sequencer area side-by-side -->
-	      
-	      <!-- Library Panel (Fixed on right) -->
-	      <aside id="library-panel">
-	        <!-- PatternSelector will render here -->
-	      </aside>
-
-	      <!-- Sequencer Area -->
-	      <div class="sequencer-wrapper">
-	        <aside id="track-controls-container" class="track-controls-container">
-	          <!-- Track controls rendered by VisualSequencer will go here -->
-	        </aside>
-	        <main class="sequencer-area">
-	          <div id="sequencer-container">
-	            <!-- VisualSequencer renders here -->
-	          </div>
-	        </main>
-	      </div>
-
+    <div class="main-content">
+      <!-- Sequencer Area -->
+      <div class="sequencer-wrapper">
+        <aside id="track-controls-container" class="track-controls-container">
+          <!-- Track controls rendered by VisualSequencer will go here -->
+        </aside>
+        <main class="sequencer-area">
+          <div id="sequencer-container">
+            <!-- VisualSequencer renders here -->
+          </div>
+        </main>
+      </div>
     </div>
 
-    <!-- Footer (Controls) -->
-    <footer>
-      <div class="controls">
-        <button id="play-button">▶ Play</button>
-        <button id="stop-button">⏹ Stop</button>
-        <input id="bpm-input" type="number" min="60" max="200" value="120"> BPM
+    <!-- Library Panel (Fixed on right) -->
+    <aside id="library-panel">
+      <!-- PatternSelector will render here -->
+    </aside>
+
+    <!-- Footer Controls -->
+    <footer class="footer-controls">
+      <div class="transport-section">
+        <button id="play-button" class="transport-btn play-btn">
+          <span class="btn-icon">▶</span>
+          <span class="btn-label">Play</span>
+        </button>
+        <button id="stop-button" class="transport-btn stop-btn">
+          <span class="btn-icon">⏹</span>
+          <span class="btn-label">Stop</span>
+        </button>
+        <div class="bpm-control">
+          <input id="bpm-input" type="number" min="60" max="200" value="120">
+          <label>BPM</label>
+        </div>
       </div>
-      <div class="exports">
-        <button id="export-json">Export JSON</button>
-        <button id="export-midi">Export MIDI</button>
+      <div class="export-section">
+        <button id="export-json" class="export-btn">
+          <span class="btn-icon">📄</span>
+          <span class="btn-label">Export JSON</span>
+        </button>
+        <button id="export-midi" class="export-btn">
+          <span class="btn-icon">🎹</span>
+          <span class="btn-label">Export MIDI</span>
+        </button>
       </div>
     </footer>
 
