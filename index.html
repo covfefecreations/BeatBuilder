@@ -1,80 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SVG Beat Sequencer</title>
-  <link rel="stylesheet" href="style.css" />
-  <!-- Advanced Audio Libraries -->
-  <script src="https://cdn.jsdelivr.net/npm/tone@14.8.49/build/Tone.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/midi-writer-js@2.1.4/build/index.min.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BeatBuilder v0.4.0</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header>
-    <h1>SVG Beat Sequencer</h1>
-    <div class="controls">
-      <button id="playBtn">▶ Play</button>
-      <button id="stopBtn">■ Stop</button>
-      <label for="bpm">BPM</label>
-      <input id="bpm" type="number" min="60" max="200" value="120" />
-      <button id="exportBtn">Export JSON</button>
-    </div>
-
-    <!-- Advanced Controls -->
-    <div class="controls advanced-controls">
-      <button id="loadDataBtn">Load All Data</button>
-      <button id="recordMidiBtn">● Record MIDI</button>
-      <button id="stopRecordBtn">■ Stop Recording</button>
-      <label for="quantize">Quantize</label>
-      <select id="quantize">
-        <option value="4n">Quarter Note</option>
-        <option value="8n">8th Note</option>
-        <option value="16n" selected>16th Note</option>
-        <option value="32n">32nd Note</option>
-      </select>
-      <button id="exportMidiBtn">Export MIDI</button>
-    </div>
-  </header>
-
-  <main>
-    <div class="sequencer-container">
-      <!-- Track Controls Panel -->
-      <div id="trackControls" class="track-controls-panel"></div>
-
-      <!-- Main Sequencer Grid -->
-      <div class="grid-wrapper">
-        <!-- Step Numbers -->
-        <div id="stepNumbers" class="step-numbers"></div>
-
-        <!-- SVG Grid -->
-        <svg id="sequencer" viewBox="0 0 800 400" preserveAspectRatio="xMidYMid meet"></svg>
+  <div class="app-container">
+    
+    <!-- Top Toolbar -->
+    <header class="toolbar">
+      <div class="logo">🎵 BeatBuilder</div>
+      
+      <div class="transport-controls">
+        <button id="play-button" class="btn btn-primary">▶ Play</button>
+        <button id="stop-button" class="btn">⏹ Stop</button>
+        <input id="bpm-input" type="number" value="120" min="60" max="200" />
+        <label>BPM</label>
       </div>
+
+      <div class="toolbar-actions">
+        <button id="library-toggle" class="btn btn-accent">📚 Library</button>
+        <button id="export-json" class="btn">💾 JSON</button>
+        <button id="export-midi" class="btn">🎹 MIDI</button>
+      </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <div class="main-content">
+      
+      <!-- Library Panel (Slides in from left) -->
+      <aside id="library-panel" class="library-panel">
+        <!-- PatternSelector will render here -->
+      </aside>
+
+      <!-- Sequencer Area -->
+      <main class="sequencer-area">
+        <div id="sequencer-container">
+          <!-- VisualSequencer renders here -->
+        </div>
+      </main>
+
     </div>
 
     <!-- Status Bar -->
-    <div id="statusBar" class="status-bar">
-      <div class="status-item">
-        <span class="status-label">Status:</span>
-        <span id="playStatus" class="status-value">Stopped</span>
-      </div>
-      <div class="status-item">
-        <span class="status-label">Tracks:</span>
-        <span id="trackCount" class="status-value">0</span>
-      </div>
-      <div class="status-item">
-        <span class="status-label">BPM:</span>
-        <span id="bpmDisplay" class="status-value">120</span>
-      </div>
-      <div class="status-item">
-        <span class="status-label">Position:</span>
-        <span id="position" class="status-value">1.1.1</span>
-      </div>
-    </div>
-  </main>
+    <footer class="status-bar">
+      <span id="status-bar">Ready</span>
+      <span id="track-count">0 tracks</span>
+    </footer>
 
-  <footer>
-    <p>🎧 Built with Tone.js + Web Audio + SVG | JSON Modular System Active</p>
-  </footer>
+  </div>
 
   <script type="module" src="main.js"></script>
 </body>
