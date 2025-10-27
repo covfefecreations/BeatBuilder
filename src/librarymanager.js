@@ -189,7 +189,34 @@ export default class LibraryManager {
       (p.emotional_character && p.emotional_character.toLowerCase().includes(search))
     );
   }
+// Add to LibraryManager class
 
+async previewPattern(pattern, duration = 4) {
+  // Create temporary audio context for preview
+  const previewEngine = new AudioEngine();
+  
+  // Convert pattern to track format
+  const track = this.convertPatternToTrack(pattern);
+  
+  // Load and play for specified duration
+  await previewEngine.loadTracks([track]);
+  previewEngine.startPlayback();
+  
+  // Stop after duration
+  setTimeout(() => {
+    previewEngine.stopPlayback();
+  }, duration * 1000);
+}
+
+convertPatternToTrack(pattern) {
+  // Reuse adapter logic from main.js
+  // This should be abstracted into a shared utility
+  switch (pattern.type) {
+    case 'drums':
+      return this.convertDrumPattern(pattern);
+    // ... other cases
+  }
+}
   /**
    * Get random pattern by type
    */
