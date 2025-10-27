@@ -84,6 +84,8 @@ body {
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  -webkit-overflow-scrolling: touch;
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* ===== App Container ===== */
@@ -183,6 +185,7 @@ body {
   position: relative;
   overflow: hidden;
   margin-bottom: var(--footer-height);
+  min-height: 0; /* Important for iOS flexbox */
 }
 
 /* ===== Sequencer Wrapper ===== */
@@ -327,6 +330,8 @@ body {
   padding: var(--space-xl);
   overflow: auto;
   position: relative;
+  -webkit-overflow-scrolling: touch;
+  min-height: 0;
 }
 
 #sequencer-container {
@@ -632,9 +637,10 @@ body {
   border-top: 1px solid var(--line-emphasis);
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 32px;
-  padding: 0 var(--space-xl);
+  padding-bottom: env(safe-area-inset-bottom);
+  z-index: 95;
+  justify-content: space-between;
+  padding: 0 40px;
   z-index: 100;
 }
 
