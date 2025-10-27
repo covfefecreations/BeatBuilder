@@ -900,3 +900,20 @@ html, body {
 .pattern-grid {
   -webkit-overflow-scrolling: touch;
 }
+/* ===== Restore App Background Color ===== */
+html, body, .app-container {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+/* Optional: keep contrast for dark themes */
+.main-content, 
+.sequencer-area,
+.library-panel {
+  background-color: var(--bg-secondary);
+}
+
+/* Ensure transparency isn't causing bleed-through */
+.app-container * {
+  background-clip: padding-box;
+}
