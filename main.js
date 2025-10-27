@@ -20,7 +20,7 @@ class BeatBuilderApp {
   constructor() {
     // 1. Initialize Core Modules
     this.state = new AppState();
-    this.audioEngine = new AudioEngine();
+	    this.audioEngine = new AudioEngine(this.state);
     this.midiManager = new MidiManager(this.audioEngine);
     this.exportManager = new ExportManager();
     this.libraryManager = new LibraryManager();
@@ -38,10 +38,14 @@ class BeatBuilderApp {
       this.exportManager,
       this.libraryManager // Pass all necessary dependencies
     );
-    this.visualSequencer = new VisualSequencer(
-      document.getElementById('sequencer-container'),
-      this.state
-    );
+	    this.visualSequencer = new VisualSequencer(
+	      document.getElementById('sequencer-container'),
+	      this.state
+	    );
+	    // Subscribe VisualSequencer to highlight events
+	    this.state.subscribe('highlightNote', (data) => {
+	      this.visualSequencer.highlightNote(data.trackId, data.noteTime, data.duration, data.highlight);
+	    });
     this.patternSelector = new PatternSelector(
       'library-panel', // Container ID
       this.libraryManager,
