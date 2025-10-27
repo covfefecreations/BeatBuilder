@@ -1,0 +1,18 @@
+{
+  "id": "bass_hollow_root",
+  "name": "Hollow Root",
+  "description": "Mournful, lush progression in Eb minor",
+  "progression": "Ebm - Bbm - Ab - Gb",
+  "key": "Eb Minor",
+  "energy": "Low-Medium",
+  "rhythm": "Whole Notes",
+  "notation": "Ebm (long) | Bbm (long) | Ab (long) | Gb (long)",
+  "notes": ["Eb", "Bb", "Ab", "Gb"],
+  "pattern": [
+    {"time": 0, "note": "D#2", "duration": 4, "velocity": 0.75},
+    {"time": 4, "note": "A#2", "duration": 4, "velocity": 0.75},
+    {"time": 8, "note": "G#2", "duration": 4, "velocity": 0.75},
+    {"time": 12, "note": "F#2", "duration": 4, "velocity": 0.75}
+  ],
+  "tips": ["Sparse, emotional progression", "Long sustained notes create space", "Perfect for ballads and emotional scenes"]
+}

@@ -1,0 +1,21 @@
+{
+  "id": "drum_underflow",
+  "name": "Underflow",
+  "description": "Deep, sparse kick pattern with wide open space",
+  "genre": "Minimal/Techno",
+  "energy": "Low",
+  "bpm": 162,
+  "bars": 2,
+  "instruments": ["Kick", "Sub Kick"],
+  "notation": {
+    "bar1": {
+      "Kick": "X - - - - - - - X - - - X - - -",
+      "Sub Kick": "X - - - - - - - - - - - X - - -"
+    },
+    "bar2": {
+      "Kick": "- - - - X - - - X - - - X - - -",
+      "Sub Kick": "- - - - - - - - X - - - - - - -"
+    }
+  },
+  "tips": ["Negative space is key", "Let each kick breathe", "Perfect for minimal, deep house vibes"]
+}

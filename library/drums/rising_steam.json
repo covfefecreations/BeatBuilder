@@ -1,0 +1,19 @@
+{
+  "id": "drum_rising_steam",
+  "name": "Rising Steam",
+  "description": "Simple four-on-the-floor kick pattern with cinematic tension",
+  "genre": "Cinematic/Electronic",
+  "energy": "Medium",
+  "bpm": 172,
+  "bars": 2,
+  "instruments": ["Kick"],
+  "notation": {
+    "bar1": {
+      "Kick": "X - - - X - - - X - - - X - - -"
+    },
+    "bar2": {
+      "Kick": "X - - - X - - - X - - - X - - -"
+    }
+  },
+  "tips": ["Classic four-on-the-floor pattern", "Great foundation for building layers", "Works well at higher tempos for tense atmospheres"]
+}

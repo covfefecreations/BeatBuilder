@@ -1,0 +1,19 @@
+{
+  "id": "drum_metro_snap",
+  "name": "Metro Snap",
+  "description": "Tight, driving pattern with precision timing like a metronome",
+  "genre": "Tech House/Techno",
+  "energy": "High",
+  "bpm": 170,
+  "bars": 2,
+  "instruments": ["Kick"],
+  "notation": {
+    "bar1": {
+      "Kick": "X - - X - - X - X - - X - - X -"
+    },
+    "bar2": {
+      "Kick": "X - - X - - X - X - - X - - X -"
+    }
+  },
+  "tips": ["Mechanical precision creates drive", "Consistent spacing for hypnotic groove", "Add hats for full techno feel"]
+}

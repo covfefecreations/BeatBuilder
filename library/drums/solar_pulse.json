@@ -1,0 +1,21 @@
+{
+  "id": "drum_solar_pulse",
+  "name": "Solar Pulse",
+  "description": "Propulsive kick pattern with warm rhythmic variations",
+  "genre": "House/Electronic",
+  "energy": "Medium-High",
+  "bpm": 168,
+  "bars": 2,
+  "instruments": ["Kick", "Kick2"],
+  "notation": {
+    "bar1": {
+      "Kick": "X - - - X - X - - X - - - X - -",
+      "Kick2": "- - - - - - - - - - - - - - - -"
+    },
+    "bar2": {
+      "Kick": "- X - X - - X - - - X - - - - -",
+      "Kick2": "- - - - - - X - - - - - - - - -"
+    }
+  },
+  "tips": ["Adds movement with off-beat kicks", "Second kick layer adds warmth", "Great for progressive builds"]
+}

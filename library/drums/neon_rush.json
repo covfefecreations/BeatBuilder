@@ -1,0 +1,21 @@
+{
+  "id": "drum_neon_rush",
+  "name": "Neon Rush",
+  "description": "High-energy pattern with rapid kick hits for urgent, driving momentum",
+  "genre": "DnB/Breakbeat",
+  "energy": "Very High",
+  "bpm": 174,
+  "bars": 2,
+  "instruments": ["Kick", "Sub Kick"],
+  "notation": {
+    "bar1": {
+      "Kick": "X - X - X - X - X X - X - X - X",
+      "Sub Kick": "X - - - X - - - X - - - X - - -"
+    },
+    "bar2": {
+      "Kick": "X - X - X - X - X - X X - X - -",
+      "Sub Kick": "X - X - X - X - - - X - - - X -"
+    }
+  },
+  "tips": ["Relentless energy with frequent hits", "Sub kick grounds the rapid kicks", "Perfect for high-intensity sections"]
+}

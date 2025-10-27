@@ -1,0 +1,20 @@
+{
+  "id": "drum_glass_hat",
+  "name": "Glass Hat",
+  "description": "Shimmery hi-hat pattern without kicks - crisp and delicate",
+  "genre": "Ambient/Downtempo",
+  "energy": "Low",
+  "bpm": 168,
+  "bars": 2,
+  "instruments": ["Closed Hat", "Open Hat"],
+  "notation": {
+    "bar1": {
+      "Closed Hat": "- X - X - X - X - X - X - X - X"
+    },
+    "bar2": {
+      "Closed Hat": "- X - X - X - X - X - X - X - X",
+      "Open Hat": "- - - - - - - X - - - - - - - X"
+    }
+  },
+  "tips": ["Perfect for breakdowns", "Add kicks later for buildup", "Creates airy, shimmering texture"]
+}

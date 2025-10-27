@@ -1,0 +1,17 @@
+{
+  "id": "lead_quiet_cry",
+  "name": "Quiet Cry",
+  "description": "Longing, soft descending lead in Bb minor",
+  "key": "Bb Minor",
+  "scale": "Bb - C - Db - Eb - F - Gb - Ab",
+  "motif": "1-♭6-5-3",
+  "mood": "Longing, Soft",
+  "energy": "Low",
+  "pattern": [
+    {"time": 0, "note": "A#4", "duration": 1.5, "velocity": 0.65},
+    {"time": 1.5, "note": "F#4", "duration": 1, "velocity": 0.6},
+    {"time": 2.5, "note": "F4", "duration": 1, "velocity": 0.65},
+    {"time": 3.5, "note": "C#4", "duration": 2, "velocity": 0.6}
+  ],
+  "tips": ["Descending minor motif evokes longing", "Soft velocities create intimacy", "Perfect for emotional ballads"]
+}

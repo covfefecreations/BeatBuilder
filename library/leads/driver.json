@@ -1,0 +1,18 @@
+{
+  "id": "lead_driver",
+  "name": "Driver",
+  "description": "Punchy, hooky lead in G minor",
+  "key": "G Minor",
+  "scale": "G - A - Bb - C - D - Eb - F",
+  "motif": "1-5-6-5-1",
+  "mood": "Punchy, Hooky",
+  "energy": "High",
+  "pattern": [
+    {"time": 0, "note": "G4", "duration": 0.5, "velocity": 0.9},
+    {"time": 0.5, "note": "D5", "duration": 0.5, "velocity": 0.85},
+    {"time": 1, "note": "D#5", "duration": 0.5, "velocity": 0.9},
+    {"time": 1.5, "note": "D5", "duration": 0.5, "velocity": 0.85},
+    {"time": 2, "note": "G4", "duration": 1, "velocity": 0.8}
+  ],
+  "tips": ["Strong root note anchors the melody", "Jump to 5th creates energy", "Great for catchy hooks"]
+}

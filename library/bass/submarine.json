@@ -1,0 +1,30 @@
+{
+  "id": "bass_submarine",
+  "name": "Submarine",
+  "description": "Deep, distant progression in C minor",
+  "progression": "Cm - Ab - Eb - Bb",
+  "key": "C Minor",
+  "energy": "Low-Medium",
+  "rhythm": "Quarter Notes",
+  "notation": "C C C C | Ab Ab Ab Ab | Eb Eb Eb Eb | Bb Bb Bb Bb",
+  "notes": ["C", "Ab", "Eb", "Bb"],
+  "pattern": [
+    {"time": 0, "note": "C2", "duration": 1, "velocity": 0.75},
+    {"time": 1, "note": "C2", "duration": 1, "velocity": 0.7},
+    {"time": 2, "note": "C2", "duration": 1, "velocity": 0.75},
+    {"time": 3, "note": "C2", "duration": 1, "velocity": 0.7},
+    {"time": 4, "note": "G#2", "duration": 1, "velocity": 0.75},
+    {"time": 5, "note": "G#2", "duration": 1, "velocity": 0.7},
+    {"time": 6, "note": "G#2", "duration": 1, "velocity": 0.75},
+    {"time": 7, "note": "G#2", "duration": 1, "velocity": 0.7},
+    {"time": 8, "note": "D#2", "duration": 1, "velocity": 0.75},
+    {"time": 9, "note": "D#2", "duration": 1, "velocity": 0.7},
+    {"time": 10, "note": "D#2", "duration": 1, "velocity": 0.75},
+    {"time": 11, "note": "D#2", "duration": 1, "velocity": 0.7},
+    {"time": 12, "note": "A#2", "duration": 1, "velocity": 0.75},
+    {"time": 13, "note": "A#2", "duration": 1, "velocity": 0.7},
+    {"time": 14, "note": "A#2", "duration": 1, "velocity": 0.75},
+    {"time": 15, "note": "A#2", "duration": 1, "velocity": 0.7}
+  ],
+  "tips": ["Deep, submerged sound", "Lower velocity for distant feel", "Perfect for ambient/atmospheric music"]
+}

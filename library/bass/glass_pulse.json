@@ -1,0 +1,30 @@
+{
+  "id": "bass_glass_pulse",
+  "name": "Glass Pulse",
+  "description": "Airy, driving progression in E minor",
+  "progression": "Em - C - G - D",
+  "key": "E Minor",
+  "energy": "Medium-High",
+  "rhythm": "Quarter Notes",
+  "notation": "E E E E | C C C C | G G G G | D D D D",
+  "notes": ["E", "C", "G", "D"],
+  "pattern": [
+    {"time": 0, "note": "E2", "duration": 1, "velocity": 0.8},
+    {"time": 1, "note": "E2", "duration": 1, "velocity": 0.75},
+    {"time": 2, "note": "E2", "duration": 1, "velocity": 0.8},
+    {"time": 3, "note": "E2", "duration": 1, "velocity": 0.75},
+    {"time": 4, "note": "C3", "duration": 1, "velocity": 0.8},
+    {"time": 5, "note": "C3", "duration": 1, "velocity": 0.75},
+    {"time": 6, "note": "C3", "duration": 1, "velocity": 0.8},
+    {"time": 7, "note": "C3", "duration": 1, "velocity": 0.75},
+    {"time": 8, "note": "G2", "duration": 1, "velocity": 0.8},
+    {"time": 9, "note": "G2", "duration": 1, "velocity": 0.75},
+    {"time": 10, "note": "G2", "duration": 1, "velocity": 0.8},
+    {"time": 11, "note": "G2", "duration": 1, "velocity": 0.75},
+    {"time": 12, "note": "D2", "duration": 1, "velocity": 0.8},
+    {"time": 13, "note": "D2", "duration": 1, "velocity": 0.75},
+    {"time": 14, "note": "D2", "duration": 1, "velocity": 0.8},
+    {"time": 15, "note": "D2", "duration": 1, "velocity": 0.75}
+  ],
+  "tips": ["Open, airy sound", "Great for electronic/pop", "Driving energy with minor feel"]
+}

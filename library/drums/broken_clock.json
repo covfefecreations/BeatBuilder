@@ -1,0 +1,21 @@
+{
+  "id": "drum_broken_clock",
+  "name": "Broken Clock",
+  "description": "Off-kilter kick pattern with nervous, unpredictable timing",
+  "genre": "Experimental/IDM",
+  "energy": "Medium-High",
+  "bpm": 170,
+  "bars": 2,
+  "instruments": ["Kick", "Kick2"],
+  "notation": {
+    "bar1": {
+      "Kick": "X - - X - - X - X X - - - X - -",
+      "Kick2": "- - - - - - - - - - - - - - - -"
+    },
+    "bar2": {
+      "Kick": "X - - X X - - X - - X - - X - -",
+      "Kick2": "- - - - X - - - - - - - - - - X"
+    }
+  },
+  "tips": ["Double kicks create tension", "Irregular spacing adds nervous energy", "Perfect for glitchy, experimental tracks"]
+}

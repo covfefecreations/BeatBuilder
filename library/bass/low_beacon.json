@@ -1,0 +1,30 @@
+{
+  "id": "bass_low_beacon",
+  "name": "Low Beacon",
+  "description": "Brooding, wide progression in D minor",
+  "progression": "Dm - Bb - F - C",
+  "key": "D Minor",
+  "energy": "Medium",
+  "rhythm": "Quarter Notes",
+  "notation": "D D D D | Bb Bb Bb Bb | F F F F | C C C C",
+  "notes": ["D", "Bb", "F", "C"],
+  "pattern": [
+    {"time": 0, "note": "D2", "duration": 1, "velocity": 0.85},
+    {"time": 1, "note": "D2", "duration": 1, "velocity": 0.75},
+    {"time": 2, "note": "D2", "duration": 1, "velocity": 0.85},
+    {"time": 3, "note": "D2", "duration": 1, "velocity": 0.75},
+    {"time": 4, "note": "A#2", "duration": 1, "velocity": 0.85},
+    {"time": 5, "note": "A#2", "duration": 1, "velocity": 0.75},
+    {"time": 6, "note": "A#2", "duration": 1, "velocity": 0.85},
+    {"time": 7, "note": "A#2", "duration": 1, "velocity": 0.75},
+    {"time": 8, "note": "F2", "duration": 1, "velocity": 0.85},
+    {"time": 9, "note": "F2", "duration": 1, "velocity": 0.75},
+    {"time": 10, "note": "F2", "duration": 1, "velocity": 0.85},
+    {"time": 11, "note": "F2", "duration": 1, "velocity": 0.75},
+    {"time": 12, "note": "C3", "duration": 1, "velocity": 0.85},
+    {"time": 13, "note": "C3", "duration": 1, "velocity": 0.75},
+    {"time": 14, "note": "C3", "duration": 1, "velocity": 0.85},
+    {"time": 15, "note": "C3", "duration": 1, "velocity": 0.75}
+  ],
+  "tips": ["Deep, cinematic feel", "Wide harmonic space", "Perfect for atmospheric tracks"]
+}
