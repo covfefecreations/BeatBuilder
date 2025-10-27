@@ -73,7 +73,7 @@ export default class VisualSequencer {
 
     const label = document.createElementNS(this.svgNS, "text");
     label.setAttribute("x", 10);
-    label.setAttribute("y", 15);
+    label.setAttribute("y", 18); // Adjusted y position
     label.setAttribute("fill", "#ccc");
     label.textContent = track.title;
     group.appendChild(label);
@@ -81,8 +81,8 @@ export default class VisualSequencer {
     track.pattern.forEach((note) => {
       const rect = document.createElementNS(this.svgNS, "rect");
       rect.setAttribute("x", note.time * this.zoom);
-      rect.setAttribute("y", 25);
-      rect.setAttribute("width", this.zoom);
+      rect.setAttribute("y", 20); // Adjusted y position
+      rect.setAttribute("width", note.duration * this.zoom); // FIX: Use note.duration for width
       rect.setAttribute("height", 40);
       rect.setAttribute("fill", track.color);
       rect.setAttribute("opacity", note.active ? "0.8" : "0.3");

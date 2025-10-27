@@ -83,7 +83,7 @@ class BeatBuilderApp {
       this.startAutoSave();
 
       // 6. Final setup
-      this.visualSequencer.render(this.state.get('tracks'));
+      this.visualSequencer.loadTracks(this.state.get('tracks')); // FIX: Use loadTracks
       this.audioEngine.setBPM(this.state.get('bpm'));
       this.audioEngine.loadTracks(this.state.get('tracks')); // Load tracks into engine on init
       
@@ -137,7 +137,7 @@ class BeatBuilderApp {
 
   syncTracksToEngine(tracks) {
     // Update visual sequencer
-    this.visualSequencer.render(tracks);
+    this.visualSequencer.loadTracks(tracks); // FIX: Use loadTracks
 
     // Load into audio engine
     this.audioEngine.loadTracks(tracks);
