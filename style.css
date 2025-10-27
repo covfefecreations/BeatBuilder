@@ -857,3 +857,46 @@ body {
     opacity: 1;
   }
 }
+/* ===== iOS Safari Fixes ===== */
+html, body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background: var(--bg-primary);
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Viewport correction for iOS dynamic bars */
+.app-container {
+  height: 100vh; /* default */
+  height: 100dvh; /* modern Safari */
+  min-height: -webkit-fill-available; /* legacy fallback */
+}
+
+/* Prevent flex children from collapsing on iOS */
+.main-content,
+.sequencer-wrapper,
+.sequencer-area {
+  min-height: 0;
+  min-width: 0;
+}
+
+/* Safety net for rendering bugs */
+.sequencer-area,
+.track-controls-container,
+#library-panel {
+  -webkit-transform: translateZ(0);
+}
+
+/* Safari sometimes hides fixed footers under safe area insets */
+.footer-controls {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Optional: smooth scrolling for overflow areas */
+.track-controls-container,
+.pattern-grid {
+  -webkit-overflow-scrolling: touch;
+}
