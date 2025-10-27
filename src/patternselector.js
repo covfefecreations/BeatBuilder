@@ -47,6 +47,8 @@ export default class PatternSelector {
     this.attachEventListeners();
   }
 
+ 
+
   /**
    * Render pattern cards
    */
@@ -62,7 +64,40 @@ export default class PatternSelector {
     } else {
       patterns = this.library.getPatternsByType(filter).map(p => ({...p, type: filter}));
     }
+// In createPatternCard method, add preview button
 
+createPatternCard(pattern) {
+  const card = document.createElement('div');
+  card.className = 'pattern-card';
+  
+  card.innerHTML = `
+    <h3>${pattern.name}</h3>
+    <p class="description">${pattern.description}</p>
+    <div class="meta">
+      <span class="badge">${pattern.genre.join(', ')}</span>
+      <span class="badge">${pattern.bpm} BPM</span>
+      <span class="badge">${pattern.energy}</span>
+    </div>
+    <div class="card-actions">
+      <button class="btn-preview" data-id="${pattern.id}">🔊 Preview</button>
+      <button class="btn-load" data-id="${pattern.id}">+ Load</button>
+    </div>
+  `;
+
+  // Preview button handler
+  card.querySelector('.btn-preview').addEventListener('click', (e) => {
+    e.stopPropagation();
+    this.libraryManager.previewPattern(pattern);
+  });
+
+  // Load button handler (existing)
+  card.querySelector('.btn-load').addEventListener('click', (e) => {
+    e.stopPropagation();
+    this.onPatternSelect(pattern);
+  });
+
+  return card;
+}
     // Apply search filter
     if (searchTerm) {
       const search = searchTerm.toLowerCase();
