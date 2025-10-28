@@ -1,4 +1,3 @@
-
 // main.js - BeatBuilder Application Orchestrator
 // Version: 2.0 (Refined Architecture)
 // Purpose: Initialize and coordinate all application modules
@@ -176,6 +175,8 @@ class BeatBuilderApp {
       throw new Error('Sequencer container not found');
     }
 
+    // --- DEBUG ALERT 1 ---
+    alert("DEBUG: About to create VisualSequencer");
     this.visualSequencer = new VisualSequencer(container, this.state);
 
     // Subscribe to note highlight events from the audio engine
@@ -360,6 +361,9 @@ class BeatBuilderApp {
     // Update visual sequencer
     if (this.visualSequencer) {
       this.visualSequencer.loadTracks(tracks);
+      
+      // --- DEBUG ALERT 2 ---
+      alert("DEBUG: Finished rendering/loading tracks into VisualSequencer");
     }
 
     // Update audio engine
